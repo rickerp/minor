@@ -1,0 +1,6 @@
+program
+	array v[3] := 1, 2, 3
+start
+	v["hello"]!
+end
+can not index with strings!

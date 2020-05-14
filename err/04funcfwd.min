@@ -1,0 +1,5 @@
+module
+	function number argc do return 0;
+	function forward number argc done
+end
+forward declaration of declared function!

@@ -1,0 +1,5 @@
+program
+	number n := 078
+start
+	n! "\n"!
+end

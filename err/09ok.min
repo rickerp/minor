@@ -1,0 +1,5 @@
+program
+	array v[3] := 1, 2, 3
+start
+	v[20]!
+end

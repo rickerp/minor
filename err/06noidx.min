@@ -1,0 +1,6 @@
+program
+	number x := 12
+start
+	x[0]!
+end
+numbers can not be indexed!

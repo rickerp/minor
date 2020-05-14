@@ -1,0 +1,7 @@
+program
+	array v;
+	const array v2[3] := 1, 2, 3
+start
+	v # "x";
+	v2 # 12;
+end

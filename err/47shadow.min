@@ -1,0 +1,3 @@
+module
+  function public number func number x do number x; x := 12; return x + x
+end

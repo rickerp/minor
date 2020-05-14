@@ -1,0 +1,5 @@
+program
+function forward number argc done
+start
+argc()! "\n"!
+end

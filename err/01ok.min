@@ -1,0 +1,3 @@
+module
+	const number var := 12
+end

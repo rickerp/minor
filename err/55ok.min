@@ -1,0 +1,26 @@
+program
+	function forward string readln string buf; number len done;
+	function forward number strlen string buf done;
+	string s;
+	number len;
+	number soma;
+	number i
+start
+	s # 100;
+	readln(s, 100);
+	len := strlen(s);
+	if len ~= 10 then "wrong length!\n"! return 1 fi
+	for i := 0 until i = len -1 step i := i + 1 do
+		soma := soma + (i+1) * (s[i] - '0');
+	done
+	if s[i] = 'X' then
+		soma := soma + 100;
+	else
+		soma := soma + 10 * (s[i] - '0');
+	fi
+	if soma % 11 = 0 then
+		"ISBN ok!\n"!
+	else
+		"wrong ISBN!\n"!
+	fi
+end

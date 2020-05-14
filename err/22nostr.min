@@ -1,0 +1,5 @@
+program
+	string s := 0xa
+start
+	s!
+end

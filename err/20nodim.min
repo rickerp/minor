@@ -1,0 +1,5 @@
+program
+	array vector[0]
+start
+	vector[0]!
+end

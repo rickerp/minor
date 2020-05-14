@@ -1,0 +1,5 @@
+program
+	function void f array x do x[0]!
+start
+	f(0);
+end

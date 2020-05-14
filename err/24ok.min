@@ -1,0 +1,11 @@
+program
+	function number bigger number x; number y do
+		if x > y then
+			x!
+			return x
+		fi
+		y!
+		return y
+start
+	bigger(2,3)!
+end

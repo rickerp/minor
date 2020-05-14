@@ -1,0 +1,4 @@
+module
+	forward number var := 12;
+end
+forward declaration can not be initialized!

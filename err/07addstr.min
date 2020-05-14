@@ -1,0 +1,7 @@
+program
+	string s1 := "hello ";
+	string s2 := "world!\n"
+start
+	(s1 + s2)!
+end
+can not add strings!

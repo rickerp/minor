@@ -1,0 +1,4 @@
+module
+	function forward number argc done;
+	function number argc do return 0
+end

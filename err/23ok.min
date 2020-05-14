@@ -1,0 +1,10 @@
+program
+	function void bigger number x; number y do
+		if x > y then
+			x!
+			return
+		fi
+		y!
+start
+	bigger(2,3);
+end

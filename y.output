@@ -1,0 +1,2857 @@
+   0  $accept : file $end
+
+   1  $$1 :
+
+   2  $$2 :
+
+   3  file : PROGRAM edecs START $$1 body END $$2
+   4       | MODULE edecs END
+
+   5  edecs :
+   6        | decs
+
+   7  decs : dec
+   8       | decs ';' dec
+
+   9  $$3 :
+
+  10  $$4 :
+
+  11  dec : FUNCTION equali ftype ID $$3 evars action $$4
+  12      | equali econst var declits
+
+  13  equali :
+  14         | quali
+
+  15  quali : PUBLIC
+  16        | FORWARD
+
+  17  evars :
+  18        | vars
+
+  19  vars : var
+  20       | vars ';' var
+
+  21  var : type ID
+  22      | type ID '[' NUM ']'
+
+  23  ftype : type
+  24        | VOID
+
+  25  type : NUMBER
+  26       | STRING
+  27       | ARRAY
+
+  28  action : DONE
+  29         | DO body
+
+  30  econst :
+  31         | CONST
+
+  32  declits :
+  33          | DEF lit lits
+
+  34  lits : litsspace
+  35       | ',' litscomma
+
+  36  litscomma : lit
+  37            | litscomma ',' lit
+
+  38  litsspace :
+  39            | litsspace lit
+
+  40  lit : NUM
+  41      | STR
+
+  42  body : bvar einstrs
+
+  43  bvar :
+  44       | bvar var ';'
+
+  45  einstrs : instraux rets
+
+  46  instraux :
+  47           | instraux instr
+
+  48  instr : IF expr THEN einstrs elif else FI
+  49        | FOR expr UNTIL expr STEP expr DO einstrs DONE
+  50        | expr ';'
+  51        | expr '!'
+  52        | leftv '#' expr ';'
+
+  53  rets :
+  54       | REPEAT
+  55       | STOP
+  56       | RETURN eexpr
+
+  57  elif :
+  58       | elif ELIF expr THEN einstrs
+
+  59  else :
+  60       | ELSE einstrs
+
+  61  eexpr :
+  62        | expr
+
+  63  leftv : ID
+  64        | ID '[' expr ']'
+
+  65  args : expr
+  66       | args ',' expr
+
+  67  expr : lit litsspace
+  68       | leftv
+  69       | ID '(' args ')'
+  70       | '(' expr ')'
+  71       | '?'
+  72       | '&' leftv
+  73       | '-' expr
+  74       | expr '^' expr
+  75       | expr '*' expr
+  76       | expr '/' expr
+  77       | expr '%' expr
+  78       | expr '+' expr
+  79       | expr '-' expr
+  80       | expr '<' expr
+  81       | expr '>' expr
+  82       | expr LE expr
+  83       | expr GE expr
+  84       | expr '=' expr
+  85       | expr NE expr
+  86       | '~' expr
+  87       | expr '&' expr
+  88       | expr '|' expr
+  89       | leftv DEF expr
+
+state 0
+	$accept : . file $end  (0)
+
+	PROGRAM  shift 1
+	MODULE  shift 2
+	.  error
+
+	file  goto 3
+
+
+state 1
+	file : PROGRAM . edecs START $$1 body END $$2  (3)
+	edecs : .  (5)
+	equali : .  (13)
+
+	FUNCTION  shift 4
+	FORWARD  shift 5
+	PUBLIC  shift 6
+	START  reduce 5
+	NUMBER  reduce 13
+	STRING  reduce 13
+	ARRAY  reduce 13
+	CONST  reduce 13
+
+	edecs  goto 7
+	decs  goto 8
+	dec  goto 9
+	equali  goto 10
+	quali  goto 11
+
+
+state 2
+	file : MODULE . edecs END  (4)
+	edecs : .  (5)
+	equali : .  (13)
+
+	FUNCTION  shift 4
+	FORWARD  shift 5
+	PUBLIC  shift 6
+	END  reduce 5
+	NUMBER  reduce 13
+	STRING  reduce 13
+	ARRAY  reduce 13
+	CONST  reduce 13
+
+	edecs  goto 12
+	decs  goto 8
+	dec  goto 9
+	equali  goto 10
+	quali  goto 11
+
+
+state 3
+	$accept : file . $end  (0)
+
+	$end  accept
+
+
+state 4
+	dec : FUNCTION . equali ftype ID $$3 evars action $$4  (11)
+	equali : .  (13)
+
+	FORWARD  shift 5
+	PUBLIC  shift 6
+	VOID  reduce 13
+	NUMBER  reduce 13
+	STRING  reduce 13
+	ARRAY  reduce 13
+
+	equali  goto 13
+	quali  goto 11
+
+
+state 5
+	quali : FORWARD .  (16)
+
+	.  reduce 16
+
+
+state 6
+	quali : PUBLIC .  (15)
+
+	.  reduce 15
+
+
+state 7
+	file : PROGRAM edecs . START $$1 body END $$2  (3)
+
+	START  shift 14
+	.  error
+
+
+state 8
+	edecs : decs .  (6)
+	decs : decs . ';' dec  (8)
+
+	';'  shift 15
+	END  reduce 6
+	START  reduce 6
+
+
+state 9
+	decs : dec .  (7)
+
+	.  reduce 7
+
+
+state 10
+	dec : equali . econst var declits  (12)
+	econst : .  (30)
+
+	CONST  shift 16
+	NUMBER  reduce 30
+	STRING  reduce 30
+	ARRAY  reduce 30
+
+	econst  goto 17
+
+
+state 11
+	equali : quali .  (14)
+
+	.  reduce 14
+
+
+state 12
+	file : MODULE edecs . END  (4)
+
+	END  shift 18
+	.  error
+
+
+state 13
+	dec : FUNCTION equali . ftype ID $$3 evars action $$4  (11)
+
+	VOID  shift 19
+	NUMBER  shift 20
+	STRING  shift 21
+	ARRAY  shift 22
+	.  error
+
+	ftype  goto 23
+	type  goto 24
+
+
+state 14
+	file : PROGRAM edecs START . $$1 body END $$2  (3)
+	$$1 : .  (1)
+
+	.  reduce 1
+
+	$$1  goto 25
+
+
+state 15
+	decs : decs ';' . dec  (8)
+	equali : .  (13)
+
+	FUNCTION  shift 4
+	FORWARD  shift 5
+	PUBLIC  shift 6
+	NUMBER  reduce 13
+	STRING  reduce 13
+	ARRAY  reduce 13
+	CONST  reduce 13
+
+	dec  goto 26
+	equali  goto 10
+	quali  goto 11
+
+
+state 16
+	econst : CONST .  (31)
+
+	.  reduce 31
+
+
+state 17
+	dec : equali econst . var declits  (12)
+
+	NUMBER  shift 20
+	STRING  shift 21
+	ARRAY  shift 22
+	.  error
+
+	var  goto 27
+	type  goto 28
+
+
+state 18
+	file : MODULE edecs END .  (4)
+
+	.  reduce 4
+
+
+state 19
+	ftype : VOID .  (24)
+
+	.  reduce 24
+
+
+state 20
+	type : NUMBER .  (25)
+
+	.  reduce 25
+
+
+state 21
+	type : STRING .  (26)
+
+	.  reduce 26
+
+
+state 22
+	type : ARRAY .  (27)
+
+	.  reduce 27
+
+
+state 23
+	dec : FUNCTION equali ftype . ID $$3 evars action $$4  (11)
+
+	ID  shift 29
+	.  error
+
+
+state 24
+	ftype : type .  (23)
+
+	.  reduce 23
+
+
+state 25
+	file : PROGRAM edecs START $$1 . body END $$2  (3)
+	bvar : .  (43)
+
+	.  reduce 43
+
+	body  goto 30
+	bvar  goto 31
+
+
+state 26
+	decs : decs ';' dec .  (8)
+
+	.  reduce 8
+
+
+state 27
+	dec : equali econst var . declits  (12)
+	declits : .  (32)
+
+	DEF  shift 32
+	END  reduce 32
+	START  reduce 32
+	';'  reduce 32
+
+	declits  goto 33
+
+
+state 28
+	var : type . ID  (21)
+	var : type . ID '[' NUM ']'  (22)
+
+	ID  shift 34
+	.  error
+
+
+state 29
+	dec : FUNCTION equali ftype ID . $$3 evars action $$4  (11)
+	$$3 : .  (9)
+
+	.  reduce 9
+
+	$$3  goto 35
+
+
+state 30
+	file : PROGRAM edecs START $$1 body . END $$2  (3)
+
+	END  shift 36
+	.  error
+
+
+state 31
+	body : bvar . einstrs  (42)
+	bvar : bvar . var ';'  (44)
+	instraux : .  (46)
+
+	NUMBER  shift 20
+	STRING  shift 21
+	ARRAY  shift 22
+	'&'  reduce 46
+	'~'  reduce 46
+	'-'  reduce 46
+	'?'  reduce 46
+	'('  reduce 46
+	NUM  reduce 46
+	STR  reduce 46
+	ID  reduce 46
+	END  reduce 46
+	START  reduce 46
+	RETURN  reduce 46
+	IF  reduce 46
+	FOR  reduce 46
+	REPEAT  reduce 46
+	STOP  reduce 46
+	';'  reduce 46
+
+	var  goto 37
+	einstrs  goto 38
+	instraux  goto 39
+	type  goto 28
+
+
+state 32
+	declits : DEF . lit lits  (33)
+
+	NUM  shift 40
+	STR  shift 41
+	.  error
+
+	lit  goto 42
+
+
+state 33
+	dec : equali econst var declits .  (12)
+
+	.  reduce 12
+
+
+state 34
+	var : type ID .  (21)
+	var : type ID . '[' NUM ']'  (22)
+
+	'['  shift 43
+	DEF  reduce 21
+	END  reduce 21
+	START  reduce 21
+	DO  reduce 21
+	DONE  reduce 21
+	';'  reduce 21
+
+
+state 35
+	dec : FUNCTION equali ftype ID $$3 . evars action $$4  (11)
+	evars : .  (17)
+
+	NUMBER  shift 20
+	STRING  shift 21
+	ARRAY  shift 22
+	DO  reduce 17
+	DONE  reduce 17
+
+	evars  goto 44
+	vars  goto 45
+	var  goto 46
+	type  goto 28
+
+
+state 36
+	file : PROGRAM edecs START $$1 body END . $$2  (3)
+	$$2 : .  (2)
+
+	.  reduce 2
+
+	$$2  goto 47
+
+
+state 37
+	bvar : bvar var . ';'  (44)
+
+	';'  shift 48
+	.  error
+
+
+state 38
+	body : bvar einstrs .  (42)
+
+	.  reduce 42
+
+
+state 39
+	einstrs : instraux . rets  (45)
+	instraux : instraux . instr  (47)
+	rets : .  (53)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	RETURN  shift 55
+	IF  shift 56
+	FOR  shift 57
+	REPEAT  shift 58
+	STOP  shift 59
+	END  reduce 53
+	START  reduce 53
+	ELSE  reduce 53
+	ELIF  reduce 53
+	FI  reduce 53
+	DONE  reduce 53
+	';'  reduce 53
+
+	lit  goto 60
+	instr  goto 61
+	rets  goto 62
+	leftv  goto 63
+	expr  goto 64
+
+
+state 40
+	lit : NUM .  (40)
+
+	.  reduce 40
+
+
+state 41
+	lit : STR .  (41)
+
+	.  reduce 41
+
+
+state 42
+	declits : DEF lit . lits  (33)
+	litsspace : .  (38)
+
+	','  shift 65
+	NUM  reduce 38
+	STR  reduce 38
+	END  reduce 38
+	START  reduce 38
+	';'  reduce 38
+
+	lits  goto 66
+	litsspace  goto 67
+
+
+state 43
+	var : type ID '[' . NUM ']'  (22)
+
+	NUM  shift 68
+	.  error
+
+
+state 44
+	dec : FUNCTION equali ftype ID $$3 evars . action $$4  (11)
+
+	DO  shift 69
+	DONE  shift 70
+	.  error
+
+	action  goto 71
+
+
+state 45
+	evars : vars .  (18)
+	vars : vars . ';' var  (20)
+
+	';'  shift 72
+	DO  reduce 18
+	DONE  reduce 18
+
+
+state 46
+	vars : var .  (19)
+
+	.  reduce 19
+
+
+state 47
+	file : PROGRAM edecs START $$1 body END $$2 .  (3)
+
+	.  reduce 3
+
+
+state 48
+	bvar : bvar var ';' .  (44)
+
+	.  reduce 44
+
+
+state 49
+	expr : '&' . leftv  (72)
+
+	ID  shift 73
+	.  error
+
+	leftv  goto 74
+
+
+state 50
+	expr : '~' . expr  (86)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 76
+
+
+state 51
+	expr : '-' . expr  (73)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 77
+
+
+state 52
+	expr : '?' .  (71)
+
+	.  reduce 71
+
+
+state 53
+	expr : '(' . expr ')'  (70)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 78
+
+
+state 54
+	leftv : ID .  (63)
+	leftv : ID . '[' expr ']'  (64)
+	expr : ID . '(' args ')'  (69)
+
+	'('  shift 79
+	'['  shift 80
+	DEF  reduce 63
+	'#'  reduce 63
+	'|'  reduce 63
+	'&'  reduce 63
+	NE  reduce 63
+	'='  reduce 63
+	'<'  reduce 63
+	'>'  reduce 63
+	LE  reduce 63
+	GE  reduce 63
+	'+'  reduce 63
+	'-'  reduce 63
+	'*'  reduce 63
+	'/'  reduce 63
+	'%'  reduce 63
+	'^'  reduce 63
+	')'  reduce 63
+	']'  reduce 63
+	END  reduce 63
+	START  reduce 63
+	THEN  reduce 63
+	ELSE  reduce 63
+	ELIF  reduce 63
+	FI  reduce 63
+	UNTIL  reduce 63
+	STEP  reduce 63
+	DO  reduce 63
+	DONE  reduce 63
+	';'  reduce 63
+	','  reduce 63
+	'!'  reduce 63
+
+
+state 55
+	rets : RETURN . eexpr  (56)
+	eexpr : .  (61)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	END  reduce 61
+	START  reduce 61
+	ELSE  reduce 61
+	ELIF  reduce 61
+	FI  reduce 61
+	DONE  reduce 61
+	';'  reduce 61
+
+	lit  goto 60
+	eexpr  goto 81
+	leftv  goto 75
+	expr  goto 82
+
+
+state 56
+	instr : IF . expr THEN einstrs elif else FI  (48)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 83
+
+
+state 57
+	instr : FOR . expr UNTIL expr STEP expr DO einstrs DONE  (49)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 84
+
+
+state 58
+	rets : REPEAT .  (54)
+
+	.  reduce 54
+
+
+state 59
+	rets : STOP .  (55)
+
+	.  reduce 55
+
+
+state 60
+	expr : lit . litsspace  (67)
+	litsspace : .  (38)
+
+	.  reduce 38
+
+	litsspace  goto 85
+
+
+state 61
+	instraux : instraux instr .  (47)
+
+	.  reduce 47
+
+
+state 62
+	einstrs : instraux rets .  (45)
+
+	.  reduce 45
+
+
+state 63
+	instr : leftv . '#' expr ';'  (52)
+	expr : leftv .  (68)
+	expr : leftv . DEF expr  (89)
+
+	DEF  shift 86
+	'#'  shift 87
+	'|'  reduce 68
+	'&'  reduce 68
+	NE  reduce 68
+	'='  reduce 68
+	'<'  reduce 68
+	'>'  reduce 68
+	LE  reduce 68
+	GE  reduce 68
+	'+'  reduce 68
+	'-'  reduce 68
+	'*'  reduce 68
+	'/'  reduce 68
+	'%'  reduce 68
+	'^'  reduce 68
+	';'  reduce 68
+	'!'  reduce 68
+
+
+state 64
+	instr : expr . ';'  (50)
+	instr : expr . '!'  (51)
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'|'  shift 88
+	'&'  shift 89
+	NE  shift 90
+	'='  shift 91
+	'<'  shift 92
+	'>'  shift 93
+	LE  shift 94
+	GE  shift 95
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	';'  shift 102
+	'!'  shift 103
+	.  error
+
+
+state 65
+	lits : ',' . litscomma  (35)
+
+	NUM  shift 40
+	STR  shift 41
+	.  error
+
+	litscomma  goto 104
+	lit  goto 105
+
+
+state 66
+	declits : DEF lit lits .  (33)
+
+	.  reduce 33
+
+
+state 67
+	lits : litsspace .  (34)
+	litsspace : litsspace . lit  (39)
+
+	NUM  shift 40
+	STR  shift 41
+	END  reduce 34
+	START  reduce 34
+	';'  reduce 34
+
+	lit  goto 106
+
+
+state 68
+	var : type ID '[' NUM . ']'  (22)
+
+	']'  shift 107
+	.  error
+
+
+state 69
+	action : DO . body  (29)
+	bvar : .  (43)
+
+	.  reduce 43
+
+	body  goto 108
+	bvar  goto 31
+
+
+state 70
+	action : DONE .  (28)
+
+	.  reduce 28
+
+
+state 71
+	dec : FUNCTION equali ftype ID $$3 evars action . $$4  (11)
+	$$4 : .  (10)
+
+	.  reduce 10
+
+	$$4  goto 109
+
+
+state 72
+	vars : vars ';' . var  (20)
+
+	NUMBER  shift 20
+	STRING  shift 21
+	ARRAY  shift 22
+	.  error
+
+	var  goto 110
+	type  goto 28
+
+
+state 73
+	leftv : ID .  (63)
+	leftv : ID . '[' expr ']'  (64)
+
+	'['  shift 80
+	'|'  reduce 63
+	'&'  reduce 63
+	NE  reduce 63
+	'='  reduce 63
+	'<'  reduce 63
+	'>'  reduce 63
+	LE  reduce 63
+	GE  reduce 63
+	'+'  reduce 63
+	'-'  reduce 63
+	'*'  reduce 63
+	'/'  reduce 63
+	'%'  reduce 63
+	'^'  reduce 63
+	')'  reduce 63
+	']'  reduce 63
+	END  reduce 63
+	START  reduce 63
+	THEN  reduce 63
+	ELSE  reduce 63
+	ELIF  reduce 63
+	FI  reduce 63
+	UNTIL  reduce 63
+	STEP  reduce 63
+	DO  reduce 63
+	DONE  reduce 63
+	';'  reduce 63
+	','  reduce 63
+	'!'  reduce 63
+
+
+state 74
+	expr : '&' leftv .  (72)
+
+	.  reduce 72
+
+
+state 75
+	expr : leftv .  (68)
+	expr : leftv . DEF expr  (89)
+
+	DEF  shift 86
+	'|'  reduce 68
+	'&'  reduce 68
+	NE  reduce 68
+	'='  reduce 68
+	'<'  reduce 68
+	'>'  reduce 68
+	LE  reduce 68
+	GE  reduce 68
+	'+'  reduce 68
+	'-'  reduce 68
+	'*'  reduce 68
+	'/'  reduce 68
+	'%'  reduce 68
+	'^'  reduce 68
+	')'  reduce 68
+	']'  reduce 68
+	END  reduce 68
+	START  reduce 68
+	THEN  reduce 68
+	ELSE  reduce 68
+	ELIF  reduce 68
+	FI  reduce 68
+	UNTIL  reduce 68
+	STEP  reduce 68
+	DO  reduce 68
+	DONE  reduce 68
+	';'  reduce 68
+	','  reduce 68
+	'!'  reduce 68
+
+
+state 76
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : '~' expr .  (86)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	NE  shift 90
+	'='  shift 91
+	'<'  shift 92
+	'>'  shift 93
+	LE  shift 94
+	GE  shift 95
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	'|'  reduce 86
+	'&'  reduce 86
+	')'  reduce 86
+	']'  reduce 86
+	END  reduce 86
+	START  reduce 86
+	THEN  reduce 86
+	ELSE  reduce 86
+	ELIF  reduce 86
+	FI  reduce 86
+	UNTIL  reduce 86
+	STEP  reduce 86
+	DO  reduce 86
+	DONE  reduce 86
+	';'  reduce 86
+	','  reduce 86
+	'!'  reduce 86
+
+
+state 77
+	expr : '-' expr .  (73)
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	.  reduce 73
+
+
+state 78
+	expr : '(' expr . ')'  (70)
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'|'  shift 88
+	'&'  shift 89
+	NE  shift 90
+	'='  shift 91
+	'<'  shift 92
+	'>'  shift 93
+	LE  shift 94
+	GE  shift 95
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	')'  shift 111
+	.  error
+
+
+state 79
+	expr : ID '(' . args ')'  (69)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	args  goto 112
+	expr  goto 113
+
+
+state 80
+	leftv : ID '[' . expr ']'  (64)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 114
+
+
+state 81
+	rets : RETURN eexpr .  (56)
+
+	.  reduce 56
+
+
+state 82
+	eexpr : expr .  (62)
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'|'  shift 88
+	'&'  shift 89
+	NE  shift 90
+	'='  shift 91
+	'<'  shift 92
+	'>'  shift 93
+	LE  shift 94
+	GE  shift 95
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	END  reduce 62
+	START  reduce 62
+	ELSE  reduce 62
+	ELIF  reduce 62
+	FI  reduce 62
+	DONE  reduce 62
+	';'  reduce 62
+
+
+state 83
+	instr : IF expr . THEN einstrs elif else FI  (48)
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'|'  shift 88
+	'&'  shift 89
+	NE  shift 90
+	'='  shift 91
+	'<'  shift 92
+	'>'  shift 93
+	LE  shift 94
+	GE  shift 95
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	THEN  shift 115
+	.  error
+
+
+state 84
+	instr : FOR expr . UNTIL expr STEP expr DO einstrs DONE  (49)
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'|'  shift 88
+	'&'  shift 89
+	NE  shift 90
+	'='  shift 91
+	'<'  shift 92
+	'>'  shift 93
+	LE  shift 94
+	GE  shift 95
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	UNTIL  shift 116
+	.  error
+
+
+state 85
+	litsspace : litsspace . lit  (39)
+	expr : lit litsspace .  (67)
+
+	NUM  shift 40
+	STR  shift 41
+	'|'  reduce 67
+	'&'  reduce 67
+	NE  reduce 67
+	'='  reduce 67
+	'<'  reduce 67
+	'>'  reduce 67
+	LE  reduce 67
+	GE  reduce 67
+	'+'  reduce 67
+	'-'  reduce 67
+	'*'  reduce 67
+	'/'  reduce 67
+	'%'  reduce 67
+	'^'  reduce 67
+	')'  reduce 67
+	']'  reduce 67
+	END  reduce 67
+	START  reduce 67
+	THEN  reduce 67
+	ELSE  reduce 67
+	ELIF  reduce 67
+	FI  reduce 67
+	UNTIL  reduce 67
+	STEP  reduce 67
+	DO  reduce 67
+	DONE  reduce 67
+	';'  reduce 67
+	','  reduce 67
+	'!'  reduce 67
+
+	lit  goto 106
+
+
+state 86
+	expr : leftv DEF . expr  (89)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 117
+
+
+state 87
+	instr : leftv '#' . expr ';'  (52)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 118
+
+
+state 88
+	expr : expr '|' . expr  (88)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 119
+
+
+state 89
+	expr : expr '&' . expr  (87)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 120
+
+
+state 90
+	expr : expr NE . expr  (85)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 121
+
+
+state 91
+	expr : expr '=' . expr  (84)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 122
+
+
+state 92
+	expr : expr '<' . expr  (80)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 123
+
+
+state 93
+	expr : expr '>' . expr  (81)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 124
+
+
+state 94
+	expr : expr LE . expr  (82)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 125
+
+
+state 95
+	expr : expr GE . expr  (83)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 126
+
+
+state 96
+	expr : expr '+' . expr  (78)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 127
+
+
+state 97
+	expr : expr '-' . expr  (79)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 128
+
+
+state 98
+	expr : expr '*' . expr  (75)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 129
+
+
+state 99
+	expr : expr '/' . expr  (76)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 130
+
+
+state 100
+	expr : expr '%' . expr  (77)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 131
+
+
+state 101
+	expr : expr '^' . expr  (74)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 132
+
+
+state 102
+	instr : expr ';' .  (50)
+
+	.  reduce 50
+
+
+state 103
+	instr : expr '!' .  (51)
+
+	.  reduce 51
+
+
+state 104
+	lits : ',' litscomma .  (35)
+	litscomma : litscomma . ',' lit  (37)
+
+	','  shift 133
+	END  reduce 35
+	START  reduce 35
+	';'  reduce 35
+
+
+state 105
+	litscomma : lit .  (36)
+
+	.  reduce 36
+
+
+state 106
+	litsspace : litsspace lit .  (39)
+
+	.  reduce 39
+
+
+state 107
+	var : type ID '[' NUM ']' .  (22)
+
+	.  reduce 22
+
+
+state 108
+	action : DO body .  (29)
+
+	.  reduce 29
+
+
+state 109
+	dec : FUNCTION equali ftype ID $$3 evars action $$4 .  (11)
+
+	.  reduce 11
+
+
+state 110
+	vars : vars ';' var .  (20)
+
+	.  reduce 20
+
+
+state 111
+	expr : '(' expr ')' .  (70)
+
+	.  reduce 70
+
+
+state 112
+	args : args . ',' expr  (66)
+	expr : ID '(' args . ')'  (69)
+
+	')'  shift 134
+	','  shift 135
+	.  error
+
+
+state 113
+	args : expr .  (65)
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'|'  shift 88
+	'&'  shift 89
+	NE  shift 90
+	'='  shift 91
+	'<'  shift 92
+	'>'  shift 93
+	LE  shift 94
+	GE  shift 95
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	')'  reduce 65
+	','  reduce 65
+
+
+state 114
+	leftv : ID '[' expr . ']'  (64)
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'|'  shift 88
+	'&'  shift 89
+	NE  shift 90
+	'='  shift 91
+	'<'  shift 92
+	'>'  shift 93
+	LE  shift 94
+	GE  shift 95
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	']'  shift 136
+	.  error
+
+
+state 115
+	instr : IF expr THEN . einstrs elif else FI  (48)
+	instraux : .  (46)
+
+	.  reduce 46
+
+	einstrs  goto 137
+	instraux  goto 39
+
+
+state 116
+	instr : FOR expr UNTIL . expr STEP expr DO einstrs DONE  (49)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 138
+
+
+state 117
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+	expr : leftv DEF expr .  (89)
+
+	'|'  shift 88
+	'&'  shift 89
+	NE  shift 90
+	'='  shift 91
+	'<'  shift 92
+	'>'  shift 93
+	LE  shift 94
+	GE  shift 95
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	')'  reduce 89
+	']'  reduce 89
+	END  reduce 89
+	START  reduce 89
+	THEN  reduce 89
+	ELSE  reduce 89
+	ELIF  reduce 89
+	FI  reduce 89
+	UNTIL  reduce 89
+	STEP  reduce 89
+	DO  reduce 89
+	DONE  reduce 89
+	';'  reduce 89
+	','  reduce 89
+	'!'  reduce 89
+
+
+state 118
+	instr : leftv '#' expr . ';'  (52)
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'|'  shift 88
+	'&'  shift 89
+	NE  shift 90
+	'='  shift 91
+	'<'  shift 92
+	'>'  shift 93
+	LE  shift 94
+	GE  shift 95
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	';'  shift 139
+	.  error
+
+
+state 119
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+	expr : expr '|' expr .  (88)
+
+	'&'  shift 89
+	NE  shift 90
+	'='  shift 91
+	'<'  shift 92
+	'>'  shift 93
+	LE  shift 94
+	GE  shift 95
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	'|'  reduce 88
+	')'  reduce 88
+	']'  reduce 88
+	END  reduce 88
+	START  reduce 88
+	THEN  reduce 88
+	ELSE  reduce 88
+	ELIF  reduce 88
+	FI  reduce 88
+	UNTIL  reduce 88
+	STEP  reduce 88
+	DO  reduce 88
+	DONE  reduce 88
+	';'  reduce 88
+	','  reduce 88
+	'!'  reduce 88
+
+
+state 120
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr '&' expr .  (87)
+	expr : expr . '|' expr  (88)
+
+	NE  shift 90
+	'='  shift 91
+	'<'  shift 92
+	'>'  shift 93
+	LE  shift 94
+	GE  shift 95
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	'|'  reduce 87
+	'&'  reduce 87
+	')'  reduce 87
+	']'  reduce 87
+	END  reduce 87
+	START  reduce 87
+	THEN  reduce 87
+	ELSE  reduce 87
+	ELIF  reduce 87
+	FI  reduce 87
+	UNTIL  reduce 87
+	STEP  reduce 87
+	DO  reduce 87
+	DONE  reduce 87
+	';'  reduce 87
+	','  reduce 87
+	'!'  reduce 87
+
+
+state 121
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr NE expr .  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'<'  shift 92
+	'>'  shift 93
+	LE  shift 94
+	GE  shift 95
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	'|'  reduce 85
+	'&'  reduce 85
+	NE  reduce 85
+	'='  reduce 85
+	')'  reduce 85
+	']'  reduce 85
+	END  reduce 85
+	START  reduce 85
+	THEN  reduce 85
+	ELSE  reduce 85
+	ELIF  reduce 85
+	FI  reduce 85
+	UNTIL  reduce 85
+	STEP  reduce 85
+	DO  reduce 85
+	DONE  reduce 85
+	';'  reduce 85
+	','  reduce 85
+	'!'  reduce 85
+
+
+state 122
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr '=' expr .  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'<'  shift 92
+	'>'  shift 93
+	LE  shift 94
+	GE  shift 95
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	'|'  reduce 84
+	'&'  reduce 84
+	NE  reduce 84
+	'='  reduce 84
+	')'  reduce 84
+	']'  reduce 84
+	END  reduce 84
+	START  reduce 84
+	THEN  reduce 84
+	ELSE  reduce 84
+	ELIF  reduce 84
+	FI  reduce 84
+	UNTIL  reduce 84
+	STEP  reduce 84
+	DO  reduce 84
+	DONE  reduce 84
+	';'  reduce 84
+	','  reduce 84
+	'!'  reduce 84
+
+
+state 123
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr '<' expr .  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	'|'  reduce 80
+	'&'  reduce 80
+	NE  reduce 80
+	'='  reduce 80
+	'<'  reduce 80
+	'>'  reduce 80
+	LE  reduce 80
+	GE  reduce 80
+	')'  reduce 80
+	']'  reduce 80
+	END  reduce 80
+	START  reduce 80
+	THEN  reduce 80
+	ELSE  reduce 80
+	ELIF  reduce 80
+	FI  reduce 80
+	UNTIL  reduce 80
+	STEP  reduce 80
+	DO  reduce 80
+	DONE  reduce 80
+	';'  reduce 80
+	','  reduce 80
+	'!'  reduce 80
+
+
+state 124
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr '>' expr .  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	'|'  reduce 81
+	'&'  reduce 81
+	NE  reduce 81
+	'='  reduce 81
+	'<'  reduce 81
+	'>'  reduce 81
+	LE  reduce 81
+	GE  reduce 81
+	')'  reduce 81
+	']'  reduce 81
+	END  reduce 81
+	START  reduce 81
+	THEN  reduce 81
+	ELSE  reduce 81
+	ELIF  reduce 81
+	FI  reduce 81
+	UNTIL  reduce 81
+	STEP  reduce 81
+	DO  reduce 81
+	DONE  reduce 81
+	';'  reduce 81
+	','  reduce 81
+	'!'  reduce 81
+
+
+state 125
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr LE expr .  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	'|'  reduce 82
+	'&'  reduce 82
+	NE  reduce 82
+	'='  reduce 82
+	'<'  reduce 82
+	'>'  reduce 82
+	LE  reduce 82
+	GE  reduce 82
+	')'  reduce 82
+	']'  reduce 82
+	END  reduce 82
+	START  reduce 82
+	THEN  reduce 82
+	ELSE  reduce 82
+	ELIF  reduce 82
+	FI  reduce 82
+	UNTIL  reduce 82
+	STEP  reduce 82
+	DO  reduce 82
+	DONE  reduce 82
+	';'  reduce 82
+	','  reduce 82
+	'!'  reduce 82
+
+
+state 126
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr GE expr .  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	'|'  reduce 83
+	'&'  reduce 83
+	NE  reduce 83
+	'='  reduce 83
+	'<'  reduce 83
+	'>'  reduce 83
+	LE  reduce 83
+	GE  reduce 83
+	')'  reduce 83
+	']'  reduce 83
+	END  reduce 83
+	START  reduce 83
+	THEN  reduce 83
+	ELSE  reduce 83
+	ELIF  reduce 83
+	FI  reduce 83
+	UNTIL  reduce 83
+	STEP  reduce 83
+	DO  reduce 83
+	DONE  reduce 83
+	';'  reduce 83
+	','  reduce 83
+	'!'  reduce 83
+
+
+state 127
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr '+' expr .  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	'|'  reduce 78
+	'&'  reduce 78
+	NE  reduce 78
+	'='  reduce 78
+	'<'  reduce 78
+	'>'  reduce 78
+	LE  reduce 78
+	GE  reduce 78
+	'+'  reduce 78
+	'-'  reduce 78
+	')'  reduce 78
+	']'  reduce 78
+	END  reduce 78
+	START  reduce 78
+	THEN  reduce 78
+	ELSE  reduce 78
+	ELIF  reduce 78
+	FI  reduce 78
+	UNTIL  reduce 78
+	STEP  reduce 78
+	DO  reduce 78
+	DONE  reduce 78
+	';'  reduce 78
+	','  reduce 78
+	'!'  reduce 78
+
+
+state 128
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr '-' expr .  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	'|'  reduce 79
+	'&'  reduce 79
+	NE  reduce 79
+	'='  reduce 79
+	'<'  reduce 79
+	'>'  reduce 79
+	LE  reduce 79
+	GE  reduce 79
+	'+'  reduce 79
+	'-'  reduce 79
+	')'  reduce 79
+	']'  reduce 79
+	END  reduce 79
+	START  reduce 79
+	THEN  reduce 79
+	ELSE  reduce 79
+	ELIF  reduce 79
+	FI  reduce 79
+	UNTIL  reduce 79
+	STEP  reduce 79
+	DO  reduce 79
+	DONE  reduce 79
+	';'  reduce 79
+	','  reduce 79
+	'!'  reduce 79
+
+
+state 129
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr '*' expr .  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'^'  shift 101
+	'|'  reduce 75
+	'&'  reduce 75
+	NE  reduce 75
+	'='  reduce 75
+	'<'  reduce 75
+	'>'  reduce 75
+	LE  reduce 75
+	GE  reduce 75
+	'+'  reduce 75
+	'-'  reduce 75
+	'*'  reduce 75
+	'/'  reduce 75
+	'%'  reduce 75
+	')'  reduce 75
+	']'  reduce 75
+	END  reduce 75
+	START  reduce 75
+	THEN  reduce 75
+	ELSE  reduce 75
+	ELIF  reduce 75
+	FI  reduce 75
+	UNTIL  reduce 75
+	STEP  reduce 75
+	DO  reduce 75
+	DONE  reduce 75
+	';'  reduce 75
+	','  reduce 75
+	'!'  reduce 75
+
+
+state 130
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr '/' expr .  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'^'  shift 101
+	'|'  reduce 76
+	'&'  reduce 76
+	NE  reduce 76
+	'='  reduce 76
+	'<'  reduce 76
+	'>'  reduce 76
+	LE  reduce 76
+	GE  reduce 76
+	'+'  reduce 76
+	'-'  reduce 76
+	'*'  reduce 76
+	'/'  reduce 76
+	'%'  reduce 76
+	')'  reduce 76
+	']'  reduce 76
+	END  reduce 76
+	START  reduce 76
+	THEN  reduce 76
+	ELSE  reduce 76
+	ELIF  reduce 76
+	FI  reduce 76
+	UNTIL  reduce 76
+	STEP  reduce 76
+	DO  reduce 76
+	DONE  reduce 76
+	';'  reduce 76
+	','  reduce 76
+	'!'  reduce 76
+
+
+state 131
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr '%' expr .  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'^'  shift 101
+	'|'  reduce 77
+	'&'  reduce 77
+	NE  reduce 77
+	'='  reduce 77
+	'<'  reduce 77
+	'>'  reduce 77
+	LE  reduce 77
+	GE  reduce 77
+	'+'  reduce 77
+	'-'  reduce 77
+	'*'  reduce 77
+	'/'  reduce 77
+	'%'  reduce 77
+	')'  reduce 77
+	']'  reduce 77
+	END  reduce 77
+	START  reduce 77
+	THEN  reduce 77
+	ELSE  reduce 77
+	ELIF  reduce 77
+	FI  reduce 77
+	UNTIL  reduce 77
+	STEP  reduce 77
+	DO  reduce 77
+	DONE  reduce 77
+	';'  reduce 77
+	','  reduce 77
+	'!'  reduce 77
+
+
+state 132
+	expr : expr . '^' expr  (74)
+	expr : expr '^' expr .  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'^'  shift 101
+	'|'  reduce 74
+	'&'  reduce 74
+	NE  reduce 74
+	'='  reduce 74
+	'<'  reduce 74
+	'>'  reduce 74
+	LE  reduce 74
+	GE  reduce 74
+	'+'  reduce 74
+	'-'  reduce 74
+	'*'  reduce 74
+	'/'  reduce 74
+	'%'  reduce 74
+	')'  reduce 74
+	']'  reduce 74
+	END  reduce 74
+	START  reduce 74
+	THEN  reduce 74
+	ELSE  reduce 74
+	ELIF  reduce 74
+	FI  reduce 74
+	UNTIL  reduce 74
+	STEP  reduce 74
+	DO  reduce 74
+	DONE  reduce 74
+	';'  reduce 74
+	','  reduce 74
+	'!'  reduce 74
+
+
+state 133
+	litscomma : litscomma ',' . lit  (37)
+
+	NUM  shift 40
+	STR  shift 41
+	.  error
+
+	lit  goto 140
+
+
+state 134
+	expr : ID '(' args ')' .  (69)
+
+	.  reduce 69
+
+
+state 135
+	args : args ',' . expr  (66)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 141
+
+
+state 136
+	leftv : ID '[' expr ']' .  (64)
+
+	.  reduce 64
+
+
+state 137
+	instr : IF expr THEN einstrs . elif else FI  (48)
+	elif : .  (57)
+
+	.  reduce 57
+
+	elif  goto 142
+
+
+state 138
+	instr : FOR expr UNTIL expr . STEP expr DO einstrs DONE  (49)
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'|'  shift 88
+	'&'  shift 89
+	NE  shift 90
+	'='  shift 91
+	'<'  shift 92
+	'>'  shift 93
+	LE  shift 94
+	GE  shift 95
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	STEP  shift 143
+	.  error
+
+
+state 139
+	instr : leftv '#' expr ';' .  (52)
+
+	.  reduce 52
+
+
+state 140
+	litscomma : litscomma ',' lit .  (37)
+
+	.  reduce 37
+
+
+state 141
+	args : args ',' expr .  (66)
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'|'  shift 88
+	'&'  shift 89
+	NE  shift 90
+	'='  shift 91
+	'<'  shift 92
+	'>'  shift 93
+	LE  shift 94
+	GE  shift 95
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	')'  reduce 66
+	','  reduce 66
+
+
+state 142
+	instr : IF expr THEN einstrs elif . else FI  (48)
+	elif : elif . ELIF expr THEN einstrs  (58)
+	else : .  (59)
+
+	ELSE  shift 144
+	ELIF  shift 145
+	FI  reduce 59
+
+	else  goto 146
+
+
+state 143
+	instr : FOR expr UNTIL expr STEP . expr DO einstrs DONE  (49)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 147
+
+
+state 144
+	else : ELSE . einstrs  (60)
+	instraux : .  (46)
+
+	.  reduce 46
+
+	einstrs  goto 148
+	instraux  goto 39
+
+
+state 145
+	elif : elif ELIF . expr THEN einstrs  (58)
+
+	'&'  shift 49
+	'~'  shift 50
+	'-'  shift 51
+	'?'  shift 52
+	'('  shift 53
+	NUM  shift 40
+	STR  shift 41
+	ID  shift 54
+	.  error
+
+	lit  goto 60
+	leftv  goto 75
+	expr  goto 149
+
+
+state 146
+	instr : IF expr THEN einstrs elif else . FI  (48)
+
+	FI  shift 150
+	.  error
+
+
+state 147
+	instr : FOR expr UNTIL expr STEP expr . DO einstrs DONE  (49)
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'|'  shift 88
+	'&'  shift 89
+	NE  shift 90
+	'='  shift 91
+	'<'  shift 92
+	'>'  shift 93
+	LE  shift 94
+	GE  shift 95
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	DO  shift 151
+	.  error
+
+
+state 148
+	else : ELSE einstrs .  (60)
+
+	.  reduce 60
+
+
+state 149
+	elif : elif ELIF expr . THEN einstrs  (58)
+	expr : expr . '^' expr  (74)
+	expr : expr . '*' expr  (75)
+	expr : expr . '/' expr  (76)
+	expr : expr . '%' expr  (77)
+	expr : expr . '+' expr  (78)
+	expr : expr . '-' expr  (79)
+	expr : expr . '<' expr  (80)
+	expr : expr . '>' expr  (81)
+	expr : expr . LE expr  (82)
+	expr : expr . GE expr  (83)
+	expr : expr . '=' expr  (84)
+	expr : expr . NE expr  (85)
+	expr : expr . '&' expr  (87)
+	expr : expr . '|' expr  (88)
+
+	'|'  shift 88
+	'&'  shift 89
+	NE  shift 90
+	'='  shift 91
+	'<'  shift 92
+	'>'  shift 93
+	LE  shift 94
+	GE  shift 95
+	'+'  shift 96
+	'-'  shift 97
+	'*'  shift 98
+	'/'  shift 99
+	'%'  shift 100
+	'^'  shift 101
+	THEN  shift 152
+	.  error
+
+
+state 150
+	instr : IF expr THEN einstrs elif else FI .  (48)
+
+	.  reduce 48
+
+
+state 151
+	instr : FOR expr UNTIL expr STEP expr DO . einstrs DONE  (49)
+	instraux : .  (46)
+
+	.  reduce 46
+
+	einstrs  goto 153
+	instraux  goto 39
+
+
+state 152
+	elif : elif ELIF expr THEN . einstrs  (58)
+	instraux : .  (46)
+
+	.  reduce 46
+
+	einstrs  goto 154
+	instraux  goto 39
+
+
+state 153
+	instr : FOR expr UNTIL expr STEP expr DO einstrs . DONE  (49)
+
+	DONE  shift 155
+	.  error
+
+
+state 154
+	elif : elif ELIF expr THEN einstrs .  (58)
+
+	.  reduce 58
+
+
+state 155
+	instr : FOR expr UNTIL expr STEP expr DO einstrs DONE .  (49)
+
+	.  reduce 49
+
+
+81 terminals, 35 nonterminals
+90 grammar rules, 156 states

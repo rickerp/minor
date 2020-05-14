@@ -1,0 +1,5 @@
+program
+	function forward number var done
+start
+	var := 21;
+end

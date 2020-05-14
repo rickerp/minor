@@ -1,0 +1,5 @@
+program start
+	if ? then
+		"dead code!\n"!
+	fi
+end

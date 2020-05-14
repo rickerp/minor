@@ -1,0 +1,5 @@
+program
+	forward number var
+start
+	var := 21;
+end
