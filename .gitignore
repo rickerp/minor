@@ -1,0 +1,6 @@
+lex.yy.c
+libminor.a
+minor
+out.*
+y.*
+yyselect.c

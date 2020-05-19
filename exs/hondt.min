@@ -1,0 +1,50 @@
+program
+	const number PARTIDOS := 10;
+	array votos[10];
+	array deputados[10];
+	number partidos;
+	number eleger;
+	number max;
+	number val;
+	number i;
+	number j;
+	number k;
+	function forward number atoi string s done;
+	function forward number argc done;
+	function forward string argv number n done
+start
+	if argc < 3 then
+		"USAGE: hondt eleger votos1 [votos2 [votos3 ...]]\n"!
+		return 1
+	fi
+
+	$$ scan inputs
+	eleger := atoi(argv(1));
+	for i := 2 until i = argc step i := i + 1 do
+		if i = PARTIDOS then
+			"partidos em excesso (max="! PARTIDOS! ")\n"!
+			return 2
+		fi
+		votos[i-2] := atoi(argv(i));
+		deputados[i-2] := 0;
+	done
+	partidos := i - 2;
+	$ apply hondt's rule $
+	for i := 0 until i = eleger step i := i + 1 do
+		max := 0;
+		k := 0;
+		for j := 0 until j = partidos step j := j + 1 do
+			val := votos[j] / (deputados[j] + 1);
+			if val > max | (val = max & votos[j] < votos[k]) then
+				max := val;
+				k := j;
+			fi
+		done
+		deputados[k] := 1 + deputados[k];
+	done
+
+	$ output results $
+	for i := 0 until i = partidos step i := i + 1 do
+		"partido "! i! " com "! deputados[i]! " deputados ("! votos[i]! " votos)\n"!
+	done
+end

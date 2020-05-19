@@ -1,0 +1,30 @@
+Este programa destina a testar a compilacao separada:
+  1 - compilar os ficheiro iter.frc e recurs.frc
+  2 - compilar este ficheiro
+  3 - assemblar (montar) os 3 ficheiros com o 'nasm'
+  4 - juntar este ficheiro (depois de compilado e assemblado: 'fact.o')
+      um dos anteriores e com 'lib.o' para produzir o executavel.
+      Caso se escolha juntar com 'iter.o' fica-se com a versao iterativa,
+      caso contrario ('recurs.o'), com a versao recursiva.
+
+program $ interface para o calculo do factorial $
+
+function forward number atoi string s done;
+function forward number argc done;
+function forward string argv number n done;
+function forward number factorial number n done;
+
+const number FACTORIAL := 5
+
+start
+  number f;
+  number n;
+
+  if argc > 1 then
+    n := atoi(argv(1));
+  else
+    n := FACTORIAL; $$ valor por omissao, caso nao seja dado um argumento.
+  fi
+
+  n! "! = "! factorial(n)! "\n"!
+end

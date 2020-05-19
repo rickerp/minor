@@ -1,0 +1,25 @@
+program $$ maior divisor comum entre dois numeros inteiros positivos
+start
+  number a;
+  number b;
+  number m;
+  number d;
+  number i;
+  d := 1;
+  a := ?;
+  b := ?;
+  if a <= 0 | b <= 0 then
+    "Os numeros devem ser inteiros positivos\n"!
+  else
+    m := a;
+    if a > b then
+      m := b;
+    fi
+    for i := 2 until i >= m step i := i + 1 do
+      if a % i = 0 & b % i = 0 then
+        d := i;
+      fi
+    done
+    d! " e' o maior divisor comum entre "! a! " e "! b! "\n"!
+  fi
+end

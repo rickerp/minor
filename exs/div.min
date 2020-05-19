@@ -1,0 +1,20 @@
+Este programa calcula os divisores de um numero inteiro lido do terminal.
+program $$ div
+number i;
+number n;
+number d := 0
+start
+  n := ?;
+  if n > 2 then
+    for i := 2 until i = n / 2 step i := i + 1 do
+      if n % i = 0 then
+	n! " e' divisivel por "! i! "\n"!
+	d := d + 1;
+      fi
+    done
+
+    if d = 0 then
+      n! " e' primo\n"!
+    fi
+  fi
+end

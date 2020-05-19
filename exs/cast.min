@@ -1,0 +1,12 @@
+Make casts in minor by declaring the functions below as:
+	function forward number arr2num array x done;
+	function forward array num2arr number x done
+	function forward number str2num string x done;
+	function forward string num2str number x done
+
+module
+	function public number arr2num number x do return x;
+	function public number num2arr number x do return x;
+	function public number str2num number x do return x;
+	function public number num2str number x do return x
+end

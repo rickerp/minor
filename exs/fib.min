@@ -1,0 +1,12 @@
+Este programa calcula um termo (lido do terminal) da serie de Fibonacci
+
+program
+
+function number fib number n do
+  if n < 2 then return n fi
+  return fib(n-1)+fib(n-2)
+
+start
+  "Qual o termo da série de Fibonacci a calcular: "!
+  fib(?)! "\n"!
+end
