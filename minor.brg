@@ -36,7 +36,7 @@ static char *mkfunc(char *s) {
 %term EQ='=' GT='>' LT='<' AND='&' OR='|' NOT='~' 
 %include "y.tab.h"
 %%
-file	: PROGRAM(decls, FUNCTION(END(ID, INT), FARGS(NIL, main)))	1 {}
+file	: PROGRAM(decls, FUNCTION(END(ID, INT), FARGS(NIL, main)))	1 { }
 file	: MODULE(decls)									1 {}
 
 decls	: NIL 											1 {}
@@ -62,7 +62,7 @@ vardecl	: STRING(ID, eqstr)								1 {}
 vardecl	: ARRAY(ID, INTS(INT, eqvec))					1 {}
 
 eqint 	: NIL											1 {}
-eqint	: INT											1 {}
+eqint	: INT											1 { p->value.i;  }
 %! eqint : INT											1 {}
 
 eqstr	: NIL											1 {}
@@ -86,8 +86,8 @@ ints 	: INTS(ints, INT)								1 {}
 eqbody 	: NIL											1 {}
 eqbody 	: body											1 {}
 
-main 	: START(fvars, instrs)							1 {}
-main 	: START(NIL, instrs)							1 {}
+main 	: START(fvars, minstrs)							1 {}
+main 	: START(NIL, minstrs)							1 {}
 
 body 	: START(fvars, STMT(instrs, ret))				1 {}
 body 	: START(NIL, STMT(instrs, ret))					1 {}
@@ -104,6 +104,9 @@ block 	: STMT(instrs, loop)							1 {}
 
 instrs 	: NIL											1 {}
 instrs 	: STMT(instrs, instr)							1 {}
+
+minstrs : NIL											1 { fprintf(yyout, pfTEXT pfALIGN pfGLOBL pfLABEL pfENTER, "_main", pfFUNC, "_main", 0); }
+minstrs : STMT(minstrs, instr)							1 {}
 
 instr 	: FI(THEN(IF(expr, block), elifs), else)		1 {}
 instr 	: FOR(UNTIL(expr, expr), STEP(block, expr))		1 {}
