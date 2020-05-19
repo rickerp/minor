@@ -1,6 +1,11 @@
-lex.yy.c
-libminor.a
+*.o 
 minor
-out.*
-y.*
+libminor.a
+lex.yy.c
+y.tab.c
+y.tab.h
+y.output
 yyselect.c
+*.asm
+*~
+
