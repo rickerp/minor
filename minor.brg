@@ -41,6 +41,9 @@ static void strtopf(char *s) {
   while (*s) fprintf(yyout, pfCHAR, (unsigned char)*s++);
 }
 
+static int isInt(Node *n) { return tTYPE(n->info) == tINT ? 1 : CMPVAL; }
+static int isStr(Node *n) { return tTYPE(n->info) == tSTR ? 1 : CMPVAL; }
+
 static int leftIsInt(Node *n) { return tTYPE(LEFT_CHILD(n)->info) == tINT ? 1 : CMPVAL; }
 static int leftIsStr(Node *n) { return tTYPE(LEFT_CHILD(n)->info) == tSTR ? 1 : CMPVAL; }
 
@@ -73,10 +76,12 @@ vardecl	: STRING(ID, NIL)								1 { fprintf(yyout, pfBSS pfALIGN pfLABEL pfBYTE
 vardecl	: ARRAY(ID, NIL)								1 {}
 
 vardecl	: NUMBER(ID, INT)								1 { fprintf(yyout, pfDATA pfALIGN pfLABEL pfINTEGER, LEFT_CHILD(p)->value.s, RIGHT_CHILD(p)->value.i); }
-vardecl	: STRING(ID, string)							1 { fprintf(yyout, pfDATA pfALIGN pfLABEL pfID, LEFT_CHILD(p)->value.s, mklbl(lbl)); }
+vardecl	: STRING(ID, lits)								1 { fprintf(yyout, pfDATA pfALIGN pfLABEL pfID, LEFT_CHILD(p)->value.s, mklbl(lbl)); }
 vardecl	: ARRAY(ID, INTS(INT, eqvec))					1 {}
 
-string	: chars											1 { fprintf(yyout, pfCHAR pfTEXT pfADDR, 0, mklbl(lbl)); }
+lits 	: CHARS(NIL, INT) 								isInt { fprintf(yyout, pfIMM, RIGHT_CHILD(p)->value.i); }
+lits 	: CHARS(chars, char)							isStr { fprintf(yyout, pfCHAR pfTEXT pfADDR, 0, mklbl(lbl)); }
+									
 chars 	: NIL											1 { fprintf(yyout, pfRODATA pfALIGN pfLABEL, mklbl(++lbl)); }		
 chars	: CHARS(chars, char)							1 {}
 
@@ -133,7 +138,7 @@ else 	: block											1 {}
 lval 	: ID											1 { fprintf(yyout, pfADDR pfLOAD, p->value.s); }
 lval 	: INDEX(expr, ID)								1 {}
 
-expr 	: string										1 {}
+expr 	: lits											1 {}
 expr	: lval											1 {}
 expr	: SCAN											1 {}
 expr	: ADDR(lval)									1 {}
@@ -143,7 +148,7 @@ expr	: SUB(expr, expr)								1 { fprintf(yyout, pfSUB); }
 expr	: MUL(expr, expr)								1 { fprintf(yyout, pfMUL); }
 expr	: DIV(expr, expr)								1 { fprintf(yyout, pfDIV); }
 expr	: MOD(expr, expr)								1 { fprintf(yyout, pfMOD); }
-expr	: POW(expr, expr)								1 {}
+expr	: POW(expr, expr)								1 { fprintf(yyout, pfCALL pfTRASH pfPUSH pfEXTRN, "mypow", 8, "mypow"); }
 expr	: EQ(expr, expr)								1 {}
 expr	: NE(expr, expr)								1 {}
 expr	: GE(expr, expr)								1 {}
