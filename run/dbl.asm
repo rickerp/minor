@@ -1,8 +1,8 @@
 	.file	"dbl.c"
 	.text
-	.globl	mypow
-	.type	mypow, @function
-mypow:
+	.globl	mpow
+	.type	mpow, @function
+mpow:
 .LFB0:
 	.cfi_startproc
 	pushl	%ebp
@@ -32,11 +32,61 @@ mypow:
 	ret
 	.cfi_endproc
 .LFE0:
-	.size	mypow, .-mypow
+	.size	mpow, .-mpow
+	.globl	mstrcmp
+	.type	mstrcmp, @function
+mstrcmp:
+.LFB1:
+	.cfi_startproc
+	pushl	%ebp
+	.cfi_def_cfa_offset 8
+	.cfi_offset 5, -8
+	movl	%esp, %ebp
+	.cfi_def_cfa_register 5
+	subl	$16, %esp
+	call	__x86.get_pc_thunk.ax
+	addl	$_GLOBAL_OFFSET_TABLE_, %eax
+.L12:
+	movl	8(%ebp), %eax
+	leal	1(%eax), %edx
+	movl	%edx, 8(%ebp)
+	movzbl	(%eax), %eax
+	movb	%al, -1(%ebp)
+	movl	12(%ebp), %eax
+	leal	1(%eax), %edx
+	movl	%edx, 12(%ebp)
+	movzbl	(%eax), %eax
+	movb	%al, -2(%ebp)
+	movzbl	-1(%ebp), %eax
+	cmpb	-2(%ebp), %al
+	je	.L6
+	movzbl	-1(%ebp), %eax
+	cmpb	-2(%ebp), %al
+	jnb	.L7
+	movl	$-1, %eax
+	jmp	.L9
+.L7:
+	movl	$1, %eax
+	jmp	.L9
+.L6:
+	cmpb	$0, -1(%ebp)
+	je	.L14
+	jmp	.L12
+.L14:
+	nop
+	movl	$0, %eax
+.L9:
+	leave
+	.cfi_restore 5
+	.cfi_def_cfa 4, 4
+	ret
+	.cfi_endproc
+.LFE1:
+	.size	mstrcmp, .-mstrcmp
 	.globl	_readr
 	.type	_readr, @function
 _readr:
-.LFB1:
+.LFB2:
 	.cfi_startproc
 	pushl	%ebp
 	.cfi_def_cfa_offset 8
@@ -56,10 +106,10 @@ _readr:
 	call	_readln@PLT
 	addl	$16, %esp
 	testl	%eax, %eax
-	jne	.L6
+	jne	.L16
 	movl	$0, %eax
-	jmp	.L8
-.L6:
+	jmp	.L18
+.L16:
 	subl	$12, %esp
 	leal	-92(%ebp), %eax
 	pushl	%eax
@@ -72,7 +122,7 @@ _readr:
 	movl	(%eax), %eax
 	movl	%eax, -12(%ebp)
 	movl	-12(%ebp), %eax
-.L8:
+.L18:
 	movl	-4(%ebp), %ebx
 	leave
 	.cfi_restore 5
@@ -80,12 +130,12 @@ _readr:
 	.cfi_def_cfa 4, 4
 	ret
 	.cfi_endproc
-.LFE1:
+.LFE2:
 	.size	_readr, .-_readr
 	.globl	_printr
 	.type	_printr, @function
 _printr:
-.LFB2:
+.LFB3:
 	.cfi_startproc
 	pushl	%ebp
 	.cfi_def_cfa_offset 8
@@ -120,12 +170,12 @@ _printr:
 	.cfi_def_cfa 4, 4
 	ret
 	.cfi_endproc
-.LFE2:
+.LFE3:
 	.size	_printr, .-_printr
 	.globl	_readd
 	.type	_readd, @function
 _readd:
-.LFB3:
+.LFB4:
 	.cfi_startproc
 	pushl	%ebp
 	.cfi_def_cfa_offset 8
@@ -144,10 +194,10 @@ _readd:
 	call	_readln@PLT
 	addl	$16, %esp
 	testl	%eax, %eax
-	jne	.L11
+	jne	.L21
 	fldz
-	jmp	.L13
-.L11:
+	jmp	.L23
+.L21:
 	subl	$12, %esp
 	leal	-96(%ebp), %eax
 	pushl	%eax
@@ -155,7 +205,7 @@ _readd:
 	addl	$16, %esp
 	fstpl	-16(%ebp)
 	fldl	-16(%ebp)
-.L13:
+.L23:
 	movl	-4(%ebp), %ebx
 	leave
 	.cfi_restore 5
@@ -163,12 +213,12 @@ _readd:
 	.cfi_def_cfa 4, 4
 	ret
 	.cfi_endproc
-.LFE3:
+.LFE4:
 	.size	_readd, .-_readd
 	.globl	_printd
 	.type	_printd, @function
 _printd:
-.LFB4:
+.LFB5:
 	.cfi_startproc
 	pushl	%ebp
 	.cfi_def_cfa_offset 8
@@ -203,12 +253,12 @@ _printd:
 	.cfi_def_cfa 4, 4
 	ret
 	.cfi_endproc
-.LFE4:
+.LFE5:
 	.size	_printd, .-_printd
 	.globl	_atod
 	.type	_atod, @function
 _atod:
-.LFB5:
+.LFB6:
 	.cfi_startproc
 	pushl	%ebp
 	.cfi_def_cfa_offset 8
@@ -225,30 +275,30 @@ _atod:
 	movl	$0, -20(%ebp)
 	movl	$0, -24(%ebp)
 	movl	$1, -28(%ebp)
-	jmp	.L16
-.L17:
+	jmp	.L26
+.L27:
 	addl	$1, 8(%ebp)
-.L16:
+.L26:
 	movl	8(%ebp), %eax
 	movzbl	(%eax), %eax
 	cmpb	$32, %al
-	je	.L17
+	je	.L27
 	movl	8(%ebp), %eax
 	movzbl	(%eax), %eax
 	cmpb	$45, %al
-	jne	.L19
+	jne	.L29
 	movl	$-1, -28(%ebp)
 	addl	$1, 8(%ebp)
-	jmp	.L19
-.L20:
+	jmp	.L29
+.L30:
 	addl	$1, 8(%ebp)
-.L19:
+.L29:
 	movl	8(%ebp), %eax
 	movzbl	(%eax), %eax
 	cmpb	$48, %al
-	je	.L20
-	jmp	.L21
-.L23:
+	je	.L30
+	jmp	.L31
+.L33:
 	fldl	-16(%ebp)
 	fldl	.LC1@GOTOFF(%ebx)
 	fmulp	%st, %st(1)
@@ -262,23 +312,23 @@ _atod:
 	fildl	-44(%ebp)
 	faddp	%st, %st(1)
 	fstpl	-16(%ebp)
-.L21:
+.L31:
 	movl	8(%ebp), %eax
 	movzbl	(%eax), %eax
 	cmpb	$47, %al
-	jle	.L22
+	jle	.L32
 	movl	8(%ebp), %eax
 	movzbl	(%eax), %eax
 	cmpb	$57, %al
-	jle	.L23
-.L22:
+	jle	.L33
+.L32:
 	movl	8(%ebp), %eax
 	movzbl	(%eax), %eax
 	cmpb	$46, %al
-	jne	.L24
+	jne	.L34
 	addl	$1, 8(%ebp)
-	jmp	.L25
-.L26:
+	jmp	.L35
+.L36:
 	fldl	-16(%ebp)
 	fldl	.LC1@GOTOFF(%ebx)
 	fmulp	%st, %st(1)
@@ -293,27 +343,27 @@ _atod:
 	faddp	%st, %st(1)
 	fstpl	-16(%ebp)
 	cmpl	$0, -24(%ebp)
-	jg	.L25
+	jg	.L35
 	subl	$1, -24(%ebp)
-.L25:
+.L35:
 	movl	8(%ebp), %eax
 	movzbl	(%eax), %eax
 	cmpb	$47, %al
-	jle	.L24
+	jle	.L34
 	movl	8(%ebp), %eax
 	movzbl	(%eax), %eax
 	cmpb	$57, %al
-	jle	.L26
-.L24:
+	jle	.L36
+.L34:
 	movl	8(%ebp), %eax
 	movzbl	(%eax), %eax
 	cmpb	$69, %al
-	je	.L27
+	je	.L37
 	movl	8(%ebp), %eax
 	movzbl	(%eax), %eax
 	cmpb	$101, %al
-	jne	.L28
-.L27:
+	jne	.L38
+.L37:
 	movl	8(%ebp), %eax
 	addl	$1, %eax
 	subl	$12, %esp
@@ -321,42 +371,42 @@ _atod:
 	call	_atoi@PLT
 	addl	$16, %esp
 	movl	%eax, -20(%ebp)
-.L28:
+.L38:
 	movl	-24(%ebp), %eax
 	addl	%eax, -20(%ebp)
 	cmpl	$0, -20(%ebp)
-	jle	.L33
-	jmp	.L30
-.L31:
+	jle	.L43
+	jmp	.L40
+.L41:
 	fldl	-16(%ebp)
 	fldl	.LC1@GOTOFF(%ebx)
 	fmulp	%st, %st(1)
 	fstpl	-16(%ebp)
-.L30:
+.L40:
 	movl	-20(%ebp), %eax
 	leal	-1(%eax), %edx
 	movl	%edx, -20(%ebp)
 	testl	%eax, %eax
-	jg	.L31
-	jmp	.L32
-.L34:
+	jg	.L41
+	jmp	.L42
+.L44:
 	fldl	-16(%ebp)
 	fldl	.LC1@GOTOFF(%ebx)
 	fdivrp	%st, %st(1)
 	fstpl	-16(%ebp)
-.L33:
+.L43:
 	movl	-20(%ebp), %eax
 	leal	1(%eax), %edx
 	movl	%edx, -20(%ebp)
 	testl	%eax, %eax
-	js	.L34
-.L32:
+	js	.L44
+.L42:
 	cmpl	$0, -28(%ebp)
-	jns	.L35
+	jns	.L45
 	fldl	-16(%ebp)
 	fchs
 	fstpl	-16(%ebp)
-.L35:
+.L45:
 	fldl	-16(%ebp)
 	movl	-4(%ebp), %ebx
 	leave
@@ -365,12 +415,12 @@ _atod:
 	.cfi_def_cfa 4, 4
 	ret
 	.cfi_endproc
-.LFE5:
+.LFE6:
 	.size	_atod, .-_atod
 	.globl	_dtoa
 	.type	_dtoa, @function
 _dtoa:
-.LFB6:
+.LFB7:
 	.cfi_startproc
 	pushl	%ebp
 	.cfi_def_cfa_offset 8
@@ -388,33 +438,33 @@ _dtoa:
 	movl	%edx, -44(%ebp)
 	movl	$0, -20(%ebp)
 	cmpl	$0, 20(%ebp)
-	jne	.L38
-	leal	str.1480@GOTOFF(%eax), %edx
+	jne	.L48
+	leal	str.1488@GOTOFF(%eax), %edx
 	movl	%edx, 20(%ebp)
-.L38:
+.L48:
 	fldl	-48(%ebp)
 	fldz
 	fucomip	%st(1), %st
 	fstp	%st(0)
-	jp	.L39
+	jp	.L49
 	fldl	-48(%ebp)
 	fldz
 	fucomip	%st(1), %st
 	fstp	%st(0)
-	jne	.L39
+	jne	.L49
 	movl	20(%ebp), %eax
 	movb	$48, (%eax)
 	movl	20(%ebp), %eax
 	addl	$1, %eax
 	movb	$0, (%eax)
 	movl	20(%ebp), %eax
-	jmp	.L41
-.L39:
+	jmp	.L51
+.L49:
 	fldl	-48(%ebp)
 	fldz
 	fucomip	%st(1), %st
 	fstp	%st(0)
-	jbe	.L42
+	jbe	.L52
 	movl	-20(%ebp), %edx
 	leal	1(%edx), %ecx
 	movl	%ecx, -20(%ebp)
@@ -425,17 +475,17 @@ _dtoa:
 	fldl	-48(%ebp)
 	fchs
 	fstpl	-48(%ebp)
-.L42:
+.L52:
 	fld1
 	fldl	-48(%ebp)
 	fucomip	%st(1), %st
 	fstp	%st(0)
-	jb	.L82
+	jb	.L92
 	fld1
 	fstpl	-32(%ebp)
 	movl	$0, -16(%ebp)
-	jmp	.L46
-.L50:
+	jmp	.L56
+.L60:
 	fldl	-32(%ebp)
 	fldl	.LC1@GOTOFF(%eax)
 	fmulp	%st, %st(1)
@@ -443,54 +493,54 @@ _dtoa:
 	fxch	%st(1)
 	fucomip	%st(1), %st
 	fstp	%st(0)
-	ja	.L84
+	ja	.L94
 	fldl	-32(%ebp)
 	fldl	.LC1@GOTOFF(%eax)
 	fmulp	%st, %st(1)
 	fstpl	-32(%ebp)
 	addl	$1, -16(%ebp)
-.L46:
+.L56:
 	fldl	-32(%ebp)
 	fldl	.LC3@GOTOFF(%eax)
 	fucomip	%st(1), %st
 	fstp	%st(0)
-	ja	.L50
-	jmp	.L51
-.L82:
+	ja	.L60
+	jmp	.L61
+.L92:
 	fldl	.LC4@GOTOFF(%eax)
 	fstpl	-32(%ebp)
 	movl	$-1, -16(%ebp)
-	jmp	.L52
-.L55:
+	jmp	.L62
+.L65:
 	fldl	-32(%ebp)
 	fldl	-48(%ebp)
 	fucomip	%st(1), %st
 	fstp	%st(0)
-	jnb	.L85
+	jnb	.L95
 	fldl	-32(%ebp)
 	fldl	.LC1@GOTOFF(%eax)
 	fdivrp	%st, %st(1)
 	fstpl	-32(%ebp)
 	subl	$1, -16(%ebp)
-.L52:
+.L62:
 	fldz
 	fldl	-32(%ebp)
 	fucomip	%st(1), %st
 	fstp	%st(0)
-	ja	.L55
-	jmp	.L51
-.L84:
+	ja	.L65
+	jmp	.L61
+.L94:
 	nop
-	jmp	.L51
-.L85:
+	jmp	.L61
+.L95:
 	nop
-.L51:
+.L61:
 	fldl	-48(%ebp)
 	fdivl	-32(%ebp)
 	fstpl	-48(%ebp)
 	movl	$0, -12(%ebp)
-	jmp	.L56
-.L61:
+	jmp	.L66
+.L71:
 	fldl	-48(%ebp)
 	fnstcw	-50(%ebp)
 	movzwl	-50(%ebp), %edx
@@ -504,9 +554,9 @@ _dtoa:
 	fxch	%st(1)
 	fucomip	%st(1), %st
 	fstp	%st(0)
-	jbe	.L57
+	jbe	.L67
 	subl	$1, -36(%ebp)
-.L57:
+.L67:
 	movl	-36(%ebp), %edx
 	leal	48(%edx), %ebx
 	movl	-20(%ebp), %edx
@@ -518,7 +568,7 @@ _dtoa:
 	movl	%ebx, %ecx
 	movb	%cl, (%edx)
 	cmpl	$0, -12(%ebp)
-	jne	.L59
+	jne	.L69
 	movl	-20(%ebp), %edx
 	leal	1(%edx), %ecx
 	movl	%ecx, -20(%ebp)
@@ -526,7 +576,7 @@ _dtoa:
 	movl	20(%ebp), %edx
 	addl	%ecx, %edx
 	movb	$46, (%edx)
-.L59:
+.L69:
 	fildl	-36(%ebp)
 	fldl	-48(%ebp)
 	fsubp	%st, %st(1)
@@ -534,44 +584,44 @@ _dtoa:
 	fmulp	%st, %st(1)
 	fstpl	-48(%ebp)
 	addl	$1, -12(%ebp)
-.L56:
+.L66:
 	movl	-12(%ebp), %edx
 	cmpl	16(%ebp), %edx
-	jge	.L60
+	jge	.L70
 	fldl	-48(%ebp)
 	fldz
 	fucomip	%st(1), %st
 	fstp	%st(0)
-	jp	.L61
+	jp	.L71
 	fldl	-48(%ebp)
 	fldz
 	fucomip	%st(1), %st
 	fstp	%st(0)
-	jne	.L61
-.L60:
+	jne	.L71
+.L70:
 	fldl	.LC5@GOTOFF(%eax)
 	fldl	-48(%ebp)
 	fucomip	%st(1), %st
 	fstp	%st(0)
-	jb	.L83
-	jmp	.L64
-.L65:
+	jb	.L93
+	jmp	.L74
+.L75:
 	subl	$1, -20(%ebp)
-.L64:
+.L74:
 	movl	-20(%ebp), %eax
 	leal	-1(%eax), %edx
 	movl	20(%ebp), %eax
 	addl	%edx, %eax
 	movzbl	(%eax), %eax
 	cmpb	$57, %al
-	je	.L65
+	je	.L75
 	movl	-20(%ebp), %eax
 	leal	-1(%eax), %edx
 	movl	20(%ebp), %eax
 	addl	%edx, %eax
 	movzbl	(%eax), %eax
 	cmpb	$46, %al
-	je	.L66
+	je	.L76
 	movl	-20(%ebp), %eax
 	leal	-1(%eax), %edx
 	movl	20(%ebp), %eax
@@ -579,8 +629,8 @@ _dtoa:
 	movzbl	(%eax), %edx
 	addl	$1, %edx
 	movb	%dl, (%eax)
-	jmp	.L69
-.L66:
+	jmp	.L79
+.L76:
 	subl	$1, -20(%ebp)
 	movl	-20(%ebp), %eax
 	leal	-1(%eax), %edx
@@ -588,7 +638,7 @@ _dtoa:
 	addl	%edx, %eax
 	movzbl	(%eax), %eax
 	cmpb	$57, %al
-	je	.L68
+	je	.L78
 	movl	-20(%ebp), %eax
 	leal	-1(%eax), %edx
 	movl	20(%ebp), %eax
@@ -596,39 +646,39 @@ _dtoa:
 	movzbl	(%eax), %edx
 	addl	$1, %edx
 	movb	%dl, (%eax)
-	jmp	.L69
-.L68:
+	jmp	.L79
+.L78:
 	movl	-20(%ebp), %eax
 	leal	-1(%eax), %edx
 	movl	20(%ebp), %eax
 	addl	%edx, %eax
 	movb	$49, (%eax)
 	addl	$1, -16(%ebp)
-	jmp	.L69
-.L83:
-	jmp	.L70
-.L71:
+	jmp	.L79
+.L93:
+	jmp	.L80
+.L81:
 	subl	$1, -20(%ebp)
-.L70:
+.L80:
 	movl	-20(%ebp), %eax
 	leal	-1(%eax), %edx
 	movl	20(%ebp), %eax
 	addl	%edx, %eax
 	movzbl	(%eax), %eax
 	cmpb	$48, %al
-	je	.L71
-.L69:
+	je	.L81
+.L79:
 	movl	-20(%ebp), %eax
 	leal	-1(%eax), %edx
 	movl	20(%ebp), %eax
 	addl	%edx, %eax
 	movzbl	(%eax), %eax
 	cmpb	$46, %al
-	jne	.L72
+	jne	.L82
 	subl	$1, -20(%ebp)
-.L72:
+.L82:
 	cmpl	$0, -16(%ebp)
-	je	.L73
+	je	.L83
 	movl	-20(%ebp), %eax
 	leal	1(%eax), %edx
 	movl	%edx, -20(%ebp)
@@ -637,7 +687,7 @@ _dtoa:
 	addl	%edx, %eax
 	movb	$69, (%eax)
 	cmpl	$0, -16(%ebp)
-	jns	.L74
+	jns	.L84
 	movl	-20(%ebp), %eax
 	leal	1(%eax), %edx
 	movl	%edx, -20(%ebp)
@@ -646,9 +696,9 @@ _dtoa:
 	addl	%edx, %eax
 	movb	$45, (%eax)
 	negl	-16(%ebp)
-.L74:
+.L84:
 	cmpl	$100, -16(%ebp)
-	jle	.L75
+	jle	.L85
 	movl	-16(%ebp), %ecx
 	movl	$1374389535, %edx
 	movl	%ecx, %eax
@@ -723,10 +773,10 @@ _dtoa:
 	addl	%edx, %eax
 	movl	%ecx, %edx
 	movb	%dl, (%eax)
-	jmp	.L73
-.L75:
+	jmp	.L83
+.L85:
 	cmpl	$10, -16(%ebp)
-	jle	.L76
+	jle	.L86
 	movl	-16(%ebp), %ecx
 	movl	$1717986919, %edx
 	movl	%ecx, %eax
@@ -770,8 +820,8 @@ _dtoa:
 	addl	%edx, %eax
 	movl	%ecx, %edx
 	movb	%dl, (%eax)
-	jmp	.L73
-.L76:
+	jmp	.L83
+.L86:
 	movl	-16(%ebp), %eax
 	leal	48(%eax), %ecx
 	movl	-20(%ebp), %eax
@@ -782,13 +832,13 @@ _dtoa:
 	addl	%edx, %eax
 	movl	%ecx, %edx
 	movb	%dl, (%eax)
-.L73:
+.L83:
 	movl	-20(%ebp), %edx
 	movl	20(%ebp), %eax
 	addl	%edx, %eax
 	movb	$0, (%eax)
 	movl	20(%ebp), %eax
-.L41:
+.L51:
 	addl	$52, %esp
 	popl	%ebx
 	.cfi_restore 3
@@ -797,12 +847,12 @@ _dtoa:
 	.cfi_def_cfa 4, 4
 	ret
 	.cfi_endproc
-.LFE6:
+.LFE7:
 	.size	_dtoa, .-_dtoa
 	.globl	_atof
 	.type	_atof, @function
 _atof:
-.LFB7:
+.LFB8:
 	.cfi_startproc
 	pushl	%ebp
 	.cfi_def_cfa_offset 8
@@ -823,12 +873,12 @@ _atof:
 	.cfi_def_cfa 4, 4
 	ret
 	.cfi_endproc
-.LFE7:
+.LFE8:
 	.size	_atof, .-_atof
 	.globl	_ftoa
 	.type	_ftoa, @function
 _ftoa:
-.LFB8:
+.LFB9:
 	.cfi_startproc
 	pushl	%ebp
 	.cfi_def_cfa_offset 8
@@ -849,10 +899,10 @@ _ftoa:
 	.cfi_def_cfa 4, 4
 	ret
 	.cfi_endproc
-.LFE8:
+.LFE9:
 	.size	_ftoa, .-_ftoa
-	.local	str.1480
-	.comm	str.1480,32,32
+	.local	str.1488
+	.comm	str.1488,32,32
 	.section	.rodata
 	.align 8
 .LC1:
@@ -875,22 +925,22 @@ _ftoa:
 	.hidden	__x86.get_pc_thunk.ax
 	.type	__x86.get_pc_thunk.ax, @function
 __x86.get_pc_thunk.ax:
-.LFB9:
+.LFB10:
 	.cfi_startproc
 	movl	(%esp), %eax
 	ret
 	.cfi_endproc
-.LFE9:
+.LFE10:
 	.section	.text.__x86.get_pc_thunk.bx,"axG",@progbits,__x86.get_pc_thunk.bx,comdat
 	.globl	__x86.get_pc_thunk.bx
 	.hidden	__x86.get_pc_thunk.bx
 	.type	__x86.get_pc_thunk.bx, @function
 __x86.get_pc_thunk.bx:
-.LFB10:
+.LFB11:
 	.cfi_startproc
 	movl	(%esp), %ebx
 	ret
 	.cfi_endproc
-.LFE10:
+.LFE11:
 	.ident	"GCC: (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0"
 	.section	.note.GNU-stack,"",@progbits

@@ -41,12 +41,17 @@ static void strtopf(char *s) {
   while (*s) fprintf(yyout, pfCHAR, (unsigned char)*s++);
 }
 
+static void cmp(Node* n, char *op) {
+	if (tTYPE(LEFT_CHILD(n)->info) == tSTR) 
+		fprintf(yyout, pfSWAP pfCALL pfTRASH pfPUSH pfEXTRN pfIMM, "mstrcmp", pfWORD * 2, "mstrcmp", 0);
+	fprintf(yyout, "%s", op);
+}
+
 static int isInt(Node *n) { return tTYPE(n->info) == tINT ? 1 : CMPVAL; }
 static int isStr(Node *n) { return tTYPE(n->info) == tSTR ? 1 : CMPVAL; }
 
-static int leftIsInt(Node *n) { return tTYPE(LEFT_CHILD(n)->info) == tINT ? 1 : CMPVAL; }
-static int leftIsStr(Node *n) { return tTYPE(LEFT_CHILD(n)->info) == tSTR ? 1 : CMPVAL; }
-
+static int leftInt(Node *n) { return tTYPE(LEFT_CHILD(n)->info) == tINT ? 1 : CMPVAL; }
+static int leftStr(Node *n) { return tTYPE(LEFT_CHILD(n)->info) == tSTR ? 1 : CMPVAL; }
 %}
 %term STMT=';' PRINT='!' ALLOC='#' INDEX='[' SCAN='?' CALL='(' PARAM=','
 %term ADD='+' SUB='-' MUL='*' DIV='/' MOD='%' POW='^' 
@@ -64,12 +69,8 @@ decl 	: FUNCTION(END(ID, INT), FARGS(fvars, eqbody))	1 {}
 decl 	: FUNCTION(END(ID, INT), FARGS(NIL, eqbody))	1 {}
 decl	: NIL											1 {}
 
-fvar 	: NUMBER(ID, NIL)								1 {}
-fvar	: STRING(ID, NIL)								1 {}
-fvar	: ARRAY(ID, INTS(INT, NIL))						1 {}
-
-fvars 	: ARGS(NIL, fvar)								1 {}
-fvars 	: ARGS(fvars, fvar)								1 {}
+fvars 	: ARGS(NIL, vardecl)							1 {}
+fvars 	: ARGS(fvars, vardecl)							1 {}
 
 vardecl : NUMBER(ID, NIL)								1 { fprintf(yyout, pfBSS pfALIGN pfLABEL pfBYTE, LEFT_CHILD(p)->value.s, 4); }
 vardecl	: STRING(ID, NIL)								1 { fprintf(yyout, pfBSS pfALIGN pfLABEL pfBYTE, LEFT_CHILD(p)->value.s, pfWORD); }
@@ -79,8 +80,9 @@ vardecl	: NUMBER(ID, INT)								1 { fprintf(yyout, pfDATA pfALIGN pfLABEL pfINT
 vardecl	: STRING(ID, lits)								1 { fprintf(yyout, pfDATA pfALIGN pfLABEL pfID, LEFT_CHILD(p)->value.s, mklbl(lbl)); }
 vardecl	: ARRAY(ID, INTS(INT, eqvec))					1 {}
 
-lits 	: CHARS(NIL, INT) 								isInt { fprintf(yyout, pfIMM, RIGHT_CHILD(p)->value.i); }
-lits 	: CHARS(chars, char)							isStr { fprintf(yyout, pfCHAR pfTEXT pfADDR, 0, mklbl(lbl)); }
+lits 	: CHARS(NIL, INT) 								1 { fprintf(yyout, pfIMM, RIGHT_CHILD(p)->value.i); }
+lits 	: CHARS(NIL, CHAR) 								1 { fprintf(yyout, pfIMM, RIGHT_CHILD(p)->value.i); }
+lits 	: CHARS(chars, char)							2 { fprintf(yyout, pfCHAR pfTEXT pfADDR, 0, mklbl(lbl)); }
 									
 chars 	: NIL											1 { fprintf(yyout, pfRODATA pfALIGN pfLABEL, mklbl(++lbl)); }		
 chars	: CHARS(chars, char)							1 {}
@@ -122,12 +124,12 @@ instrs 	: STMT(instrs, instr)							1 {}
 minstrs : NIL											1 { fprintf(yyout, pfTEXT pfALIGN pfGLOBL pfLABEL pfENTER, "_main", pfFUNC, "_main", 0); }
 minstrs : STMT(minstrs, instr)							1 {}
 
-instr 	: FI(THEN(IF(expr, block), elifs), else)		1 {}
+instr 	: FI(THEN(if, elifs), else)						1 {}
 instr 	: FOR(UNTIL(expr, expr), STEP(block, expr))		1 {}
 instr 	: expr											1 {}
 instr 	: ALLOC(expr, lval)								1 {}
-instr 	: PRINT(expr)									leftIsStr { fprintf(yyout, pfCALL pfTRASH pfPUSH pfEXTRN, "_prints", 4, "_prints"); }
-instr 	: PRINT(expr)									leftIsInt { fprintf(yyout, pfCALL pfTRASH pfPUSH pfEXTRN, "_printi", 4, "_printi"); }
+instr 	: PRINT(expr)									leftStr { fprintf(yyout, pfCALL pfTRASH pfPUSH pfEXTRN, "_prints", pfWORD, "_prints"); }
+instr 	: PRINT(expr)									leftInt { fprintf(yyout, pfCALL pfTRASH pfPUSH pfEXTRN, "_printi", 4, "_printi"); }
 
 elifs 	: NIL											1 {}
 elifs 	: ELIF(elifs, IF(expr, block))					1 {}
@@ -135,32 +137,36 @@ elifs 	: ELIF(elifs, IF(expr, block))					1 {}
 else	: NIL											1 {}
 else 	: block											1 {}
 
-lval 	: ID											1 { fprintf(yyout, pfADDR pfLOAD, p->value.s); }
+lval 	: ID											1 { fprintf(yyout, pfADDR, p->value.s); }
 lval 	: INDEX(expr, ID)								1 {}
 
 expr 	: lits											1 {}
-expr	: lval											1 {}
-expr	: SCAN											1 {}
+expr	: lval											1 { fprintf(yyout, pfLOAD); }
+expr	: SCAN											1 { fprintf(yyout, pfCALL pfPUSH pfEXTRN, "_readi", "_readi"); }
 expr	: ADDR(lval)									1 {}
-expr	: expr											1 {}
-expr	: ADD(expr, expr)								1 { fprintf(yyout, pfADD); }
-expr	: SUB(expr, expr)								1 { fprintf(yyout, pfSUB); }
-expr	: MUL(expr, expr)								1 { fprintf(yyout, pfMUL); }
-expr	: DIV(expr, expr)								1 { fprintf(yyout, pfDIV); }
-expr	: MOD(expr, expr)								1 { fprintf(yyout, pfMOD); }
-expr	: POW(expr, expr)								1 { fprintf(yyout, pfCALL pfTRASH pfPUSH pfEXTRN, "mypow", 8, "mypow"); }
-expr	: EQ(expr, expr)								1 {}
-expr	: NE(expr, expr)								1 {}
-expr	: GE(expr, expr)								1 {}
-expr	: LE(expr, expr)								1 {}
-expr	: LT(expr, expr)								1 {}
-expr	: GT(expr, expr)								1 {}
-expr	: AND(expr, expr)								1 {}
-expr	: OR(expr, expr)								1 {}
-expr	: NOT(expr)										1 {}
-expr	: UMINUS(expr)									1 {}
-expr	: DEF(expr, lval)								1 {}
-expr	: CALL(ID, exprs)								1 {}
+
+expr	: ADD(expr, expr)				1 { fprintf(yyout, pfADD); }
+expr	: SUB(expr, expr)				1 { fprintf(yyout, pfSUB); }
+expr	: MUL(expr, expr)				1 { fprintf(yyout, pfMUL); }
+expr	: DIV(expr, expr)				1 { fprintf(yyout, pfDIV); }
+expr	: MOD(expr, expr)				1 { fprintf(yyout, pfMOD); }
+expr	: POW(expr, expr)				1 { fprintf(yyout, pfCALL pfTRASH pfPUSH pfEXTRN, "mpow", 8, "mpow"); }
+expr	: EQ(expr, expr)				1 { cmp(p, pfEQ); }
+expr	: NE(expr, expr)				1 { cmp(p, pfNE); }
+expr	: GE(expr, expr)				1 { cmp(p, pfGE); }
+expr	: LE(expr, expr)				1 { cmp(p, pfLE); }
+expr	: GT(expr, expr)				1 { cmp(p, pfGT); }
+expr	: LT(expr, expr)				1 { cmp(p, pfLT); }
+expr	: AND(and,expr)					1 { fprintf(yyout, pfLABEL, mklbl(LEFT_CHILD(p)->place)); }
+and		: expr							1 { p->place = ++lbl; fprintf(yyout, pfDUP pfJZ pfTRASH, mklbl(p->place), pfWORD); }
+expr	: OR(or,expr)					1 { fprintf(yyout, pfLABEL, mklbl(LEFT_CHILD(p)->place)); }
+or		: expr							1 { p->place = ++lbl; fprintf(yyout, pfDUP pfJNZ pfTRASH, mklbl(p->place), pfWORD); }
+expr	: NOT(expr)						1 { fprintf(yyout, pfIMM pfEQ, 0); }
+expr	: UMINUS(expr)					1 { fprintf(yyout, pfNEG); }
+
+expr	: DEF(rval, lval)				1 { fprintf(yyout, pfSTORE); }
+rval 	: expr							1 { fprintf(yyout, pfDUP); }
+expr	: CALL(ID, exprs)				1 {}
 
 exprs 	: PARAM(expr, NIL)								1 {}
 exprs	: PARAM(expr, exprs)							1 {}
