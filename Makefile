@@ -10,6 +10,7 @@ CFLAGS=-g -DYYDEBUG
 AS=nasm -felf32
 LD=ld -m elf_i386
 LDLIBS=lib$(LANG).a
+T=t
 
 $(LANG): $(LANG).y $(LANG).l $(LANG).brg
 	make -C $(LIB)
@@ -20,10 +21,11 @@ $(LANG): $(LANG).y $(LANG).l $(LANG).brg
 	make -C $(RUN)
 	-cp $(RUN)/librun.a $(LDLIBS)
 
-out: out.asm $(LANG)
-	$(AS) out.asm -o out.o
-	$(LD) out.o $(LDLIBS) -o out
-	./out
+t:: $(T).min $(LANG)
+	./$(LANG) -trace $(T).min
+	$(AS) $(T).asm -o $(T).o
+	$(LD) $(T).o $(LDLIBS) -o $(T)
+	./$(T)
 
 arm::
 	$(MAKE) $(MFLAGS) CC=gcc ARCH='-DpfARM' RUN=arm AS=as LD=ld

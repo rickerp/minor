@@ -11,6 +11,8 @@
 #include "y.tab.h"
 #include "minor.h"
 
+#define CMPVAL 1111
+
 #ifndef U_
 #define U_ "_"
 #endif
@@ -21,11 +23,6 @@ static void yytrace(NODEPTR_TYPE p, int eruleno, int cost, int bestcost);
 extern FILE *yyout;
 
 int lbl;
-
-static void outstr(char *s) {
-  while (*s) fprintf(yyout, pfCHAR, (unsigned char)*s++);
-  fprintf(yyout, pfCHAR, 0);
-}
 
 static char *mklbl(int n) {
 	static char buf[20];
@@ -39,6 +36,14 @@ static char *mkfunc(char *s) {
 	strcat(buf, s);
 	return buf;
 }
+
+static void strtopf(char *s) {
+  while (*s) fprintf(yyout, pfCHAR, (unsigned char)*s++);
+}
+
+static int leftIsInt(Node *n) { return tTYPE(LEFT_CHILD(n)->info) == tINT ? 1 : CMPVAL; }
+static int leftIsStr(Node *n) { return tTYPE(LEFT_CHILD(n)->info) == tSTR ? 1 : CMPVAL; }
+
 %}
 %term STMT=';' PRINT='!' ALLOC='#' INDEX='[' SCAN='?' CALL='(' PARAM=','
 %term ADD='+' SUB='-' MUL='*' DIV='/' MOD='%' POW='^' 
@@ -49,15 +54,12 @@ file	: PROGRAM(decls, FUNCTION(END(ID, INT), FARGS(NIL, main)))	1 { fprintf(yyou
 file	: MODULE(decls)									1 {}
 
 decls	: NIL 											1 {}
-decls 	: gdecls										1 {}
-
-gdecls 	: DECL(gdecls, decl) 							1 {}
-gdecls	: DECL(NIL, decl)	 							1 {}
+decls 	: DECL(decls, decl)								1 {}
 
 decl 	: VAR(vardecl) 									1 {}
 decl 	: FUNCTION(END(ID, INT), FARGS(fvars, eqbody))	1 {}
 decl 	: FUNCTION(END(ID, INT), FARGS(NIL, eqbody))	1 {}
-decl	: NIL											
+decl	: NIL											1 {}
 
 fvar 	: NUMBER(ID, NIL)								1 {}
 fvar	: STRING(ID, NIL)								1 {}
@@ -66,23 +68,21 @@ fvar	: ARRAY(ID, INTS(INT, NIL))						1 {}
 fvars 	: ARGS(NIL, fvar)								1 {}
 fvars 	: ARGS(fvars, fvar)								1 {}
 
-vardecl	: NUMBER(ID, eqint)								1 {}
-vardecl	: STRING(ID, eqstr)								1 {}
+vardecl : NUMBER(ID, NIL)								1 { fprintf(yyout, pfBSS pfALIGN pfLABEL pfBYTE, LEFT_CHILD(p)->value.s, 4); }
+vardecl	: STRING(ID, NIL)								1 { fprintf(yyout, pfBSS pfALIGN pfLABEL pfBYTE, LEFT_CHILD(p)->value.s, pfWORD); }
+vardecl	: ARRAY(ID, NIL)								1 {}
+
+vardecl	: NUMBER(ID, INT)								1 { fprintf(yyout, pfDATA pfALIGN pfLABEL pfINTEGER, LEFT_CHILD(p)->value.s, RIGHT_CHILD(p)->value.i); }
+vardecl	: STRING(ID, string)							1 { fprintf(yyout, pfDATA pfALIGN pfLABEL pfID, LEFT_CHILD(p)->value.s, mklbl(lbl)); }
 vardecl	: ARRAY(ID, INTS(INT, eqvec))					1 {}
 
-eqint 	: NIL											1 {}
-eqint	: INT											1 { p->value.i;  }
-%! eqint : INT											1 {}
-
-eqstr	: NIL											1 {}
-eqstr	: chars											1 {}
-
-chars 	: CHARS(NIL, char)								1 {}		
+string	: chars											1 { fprintf(yyout, pfCHAR pfTEXT pfADDR, 0, mklbl(lbl)); }
+chars 	: NIL											1 { fprintf(yyout, pfRODATA pfALIGN pfLABEL, mklbl(++lbl)); }		
 chars	: CHARS(chars, char)							1 {}
 
-char 	: INT											1 {}
-char 	: CHAR											1 {}
-char 	: STR											1 { lbl++; fprintf(yyout, pfRODATA pfALIGN pfLABEL, mklbl(lbl)); outstr(p->value.s); fprintf(yyout, pfTEXT pfADDR, mklbl(lbl)); }
+char 	: INT											1 { fprintf(yyout, pfCHAR, (char) p->value.i); }
+char 	: CHAR											1 { fprintf(yyout, pfCHAR, (char) p->value.i); }
+char 	: STR											1 { strtopf(p->value.s); }
 
 eqvec	: NIL											1 {}
 eqvec 	: ints											1 {}
@@ -119,9 +119,10 @@ minstrs : STMT(minstrs, instr)							1 {}
 
 instr 	: FI(THEN(IF(expr, block), elifs), else)		1 {}
 instr 	: FOR(UNTIL(expr, expr), STEP(block, expr))		1 {}
-instr 	: PRINT(expr)									1 { fprintf(yyout, pfCALL pfTRASH pfPUSH pfEXTRN, "_prints", 4, "_prints"); }
-instr 	: expr											
+instr 	: expr											1 {}
 instr 	: ALLOC(expr, lval)								1 {}
+instr 	: PRINT(expr)									leftIsStr { fprintf(yyout, pfCALL pfTRASH pfPUSH pfEXTRN, "_prints", 4, "_prints"); }
+instr 	: PRINT(expr)									leftIsInt { fprintf(yyout, pfCALL pfTRASH pfPUSH pfEXTRN, "_printi", 4, "_printi"); }
 
 elifs 	: NIL											1 {}
 elifs 	: ELIF(elifs, IF(expr, block))					1 {}
@@ -129,19 +130,19 @@ elifs 	: ELIF(elifs, IF(expr, block))					1 {}
 else	: NIL											1 {}
 else 	: block											1 {}
 
-lval 	: ID											1 {}
+lval 	: ID											1 { fprintf(yyout, pfADDR pfLOAD, p->value.s); }
 lval 	: INDEX(expr, ID)								1 {}
 
-expr 	: chars											1 {}
+expr 	: string										1 {}
 expr	: lval											1 {}
 expr	: SCAN											1 {}
 expr	: ADDR(lval)									1 {}
 expr	: expr											1 {}
-expr	: ADD(expr, expr)								1 {}
-expr	: SUB(expr, expr)								1 {}
-expr	: MUL(expr, expr)								1 {}
-expr	: DIV(expr, expr)								1 {}
-expr	: MOD(expr, expr)								1 {}
+expr	: ADD(expr, expr)								1 { fprintf(yyout, pfADD); }
+expr	: SUB(expr, expr)								1 { fprintf(yyout, pfSUB); }
+expr	: MUL(expr, expr)								1 { fprintf(yyout, pfMUL); }
+expr	: DIV(expr, expr)								1 { fprintf(yyout, pfDIV); }
+expr	: MOD(expr, expr)								1 { fprintf(yyout, pfMOD); }
 expr	: POW(expr, expr)								1 {}
 expr	: EQ(expr, expr)								1 {}
 expr	: NE(expr, expr)								1 {}

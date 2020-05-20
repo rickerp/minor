@@ -1,6 +1,11 @@
-*.o 
-minor
+*
+!/**/
+!*.*
+
+*.o
 libminor.a
+lib/libutil.a
+run/librun.a
 lex.yy.c
 y.tab.c
 y.tab.h
@@ -8,4 +13,4 @@ y.output
 yyselect.c
 *.asm
 *~
-
+/*.min
