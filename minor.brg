@@ -12,6 +12,7 @@
 #include "minor.h"
 
 #define CMPVAL 1111
+#define IFMAX 20
 
 #ifndef U_
 #define U_ "_"
@@ -23,6 +24,9 @@ static void yytrace(NODEPTR_TYPE p, int eruleno, int cost, int bestcost);
 extern FILE *yyout;
 
 int lbl;
+
+int ifvec[IFMAX][2]; /* [ { if_end, current_elif }, {...iflvl2...}, ... ] */
+int iflvl = -1;
 
 static char *mklbl(int n) {
 	static char buf[20];
@@ -116,7 +120,6 @@ loop 	: ret											1 {}
 loop 	: REPEAT										1 {}
 loop 	: STOP											1 {}
 
-block 	: STMT(instrs, loop)							1 {}
 
 instrs 	: NIL											1 {}
 instrs 	: STMT(instrs, instr)							1 {}
@@ -124,18 +127,25 @@ instrs 	: STMT(instrs, instr)							1 {}
 minstrs : NIL											1 { fprintf(yyout, pfTEXT pfALIGN pfGLOBL pfLABEL pfENTER, "_main", pfFUNC, "_main", 0); }
 minstrs : STMT(minstrs, instr)							1 {}
 
-instr 	: FI(THEN(if, elifs), else)						1 {}
+%! if elif else
+ifcond 	: expr 											1 { ifvec[++iflvl][0] = ++lbl; fprintf(yyout, pfJZ, mklbl(ifvec[iflvl][1] = ++lbl));}
+cond 	: expr											1 { fprintf(yyout, pfJZ, mklbl(ifvec[iflvl][1] = ++lbl)); }
+instr 	: FI(THEN(IF(ifcond, block), elifs), else)		1 { fprintf(yyout, pfLABEL, mklbl(ifvec[iflvl][0])); iflvl--; }
+elifs 	: ELIF(elifs, IF(cond, block))					1 {}
+elifs 	: NIL											1 {}
+else 	: STMT(instrs, ret)								1 {}
+else	: NIL											1 {}
+block 	: STMT(instrs, ret)								1 { fprintf(yyout, pfJMP pfLABEL, mklbl(ifvec[iflvl][0]), mklbl(ifvec[iflvl][1])); }
+
+block 	: STMT(instrs, loop)							2 {}
 instr 	: FOR(UNTIL(expr, expr), STEP(block, expr))		1 {}
-instr 	: expr											1 {}
+instr 	: expr											1 {  }
+
 instr 	: ALLOC(expr, lval)								1 {}
 instr 	: PRINT(expr)									leftStr { fprintf(yyout, pfCALL pfTRASH pfPUSH pfEXTRN, "_prints", pfWORD, "_prints"); }
 instr 	: PRINT(expr)									leftInt { fprintf(yyout, pfCALL pfTRASH pfPUSH pfEXTRN, "_printi", 4, "_printi"); }
 
-elifs 	: NIL											1 {}
-elifs 	: ELIF(elifs, IF(expr, block))					1 {}
 
-else	: NIL											1 {}
-else 	: block											1 {}
 
 lval 	: ID											1 { fprintf(yyout, pfADDR, p->value.s); }
 lval 	: INDEX(expr, ID)								1 {}
