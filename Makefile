@@ -10,7 +10,6 @@ CFLAGS=-g -DYYDEBUG
 AS=nasm -felf32
 LD=ld -m elf_i386
 LDLIBS=lib$(LANG).a
-T=t
 
 $(LANG): $(LANG).y $(LANG).l $(LANG).brg
 	make -C $(LIB)
@@ -21,11 +20,8 @@ $(LANG): $(LANG).y $(LANG).l $(LANG).brg
 	make -C $(RUN)
 	-cp $(RUN)/librun.a $(LDLIBS)
 
-t:: $(T).min $(LANG)
-	./$(LANG) -trace $(T).min
-	$(AS) $(T).asm -o $(T).o
-	$(LD) $(T).o $(LDLIBS) -o $(T)
-	./$(T)
+test:: $(LANG)
+	./runtest.sh
 
 arm::
 	$(MAKE) $(MFLAGS) CC=gcc ARCH='-DpfARM' RUN=arm AS=as LD=ld
@@ -33,11 +29,11 @@ arm::
 exs::
 	./$(EXS)/run.sh
 
-test:: $(LANG)
-	make -C $(TESTS) test
+tests:: $(LANG)
+	make -C $(TESTS)
 
 clean::
 	make -C $(LIB) clean
 	make -C $(RUN) clean
 	#make -C $(EXS) clean
-	rm -f *.o $(LANG) $(LDLIBS) lex.yy.c y.tab.c y.tab.h y.output yyselect.c *.asm *~
+	rm -f *.o *.run $(LANG) $(LDLIBS) lex.yy.c y.tab.c y.tab.h y.output yyselect.c *.asm *~

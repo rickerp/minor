@@ -125,8 +125,8 @@ eqvec	:			{ $$ = nilNode(NIL); }
 	| DEF ints		{ $$ = $2; }
 	;
 
-ints	: INT			{ $$ = intNode(INT, $1); }
-	| '-' INT		{ $$ = intNode(INT, -$2); }
+ints	: INT			{ $$ = binNode(INTS, nilNode(NIL), intNode(INT, $1)); }
+	| '-' INT		{ $$ = binNode(INTS, nilNode(NIL), intNode(INT, -$2)); }
 	| ints ',' INT		{ $$ = binNode(INTS, $1, intNode(INT, $3)); }
 	| ints ',' '-' INT	{ $$ = binNode(INTS, $1, intNode(INT, -$4)); }
 	;
@@ -396,7 +396,7 @@ static void isDim(char *name, int dim, Node *init) {
 		return;
 	}
 	if (!dim) return; /* [] not specified */
-	for (cnt = init->attrib != NIL; init->attrib == INTS; cnt++)
+	for (cnt = 0; init->attrib == INTS; cnt++)
 		init = init->SUB(0);
 	if (cnt > dim) {
 		sprintf(errstr, "too many initializers '%d' for '%s[%d]'", cnt, name, dim);
