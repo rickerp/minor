@@ -28,7 +28,7 @@ extern FILE *yyout;
 int ifvec[IFMAX][2]; /* [ { if_end, current_elif }, {...iflvl2...}, ... ] */
 int iflvl = -1;
 
-int forvec[FORMAX][2];
+int forvec[FORMAX];
 int forlvl = -1;
 
 static char *extvec[EXTMAX];
@@ -114,7 +114,7 @@ decl 	: FUNCTION(END(ID, INT), FARGS(fvars, eqbody))	1 {}
 decl 	: FUNCTION(END(ID, INT), FARGS(NIL, eqbody))	1 {}
 
 decl 	: VAR(NUMBER(ID, int)) 			1 { var(p); }
-decl 	: VAR(STRING(ID, chars))		1 { var(p); }
+decl 	: VAR(STRING(ID, str))			1 { var(p); }
 decl 	: VAR(ARRAY(ID, arr))			1 { var(p); }
 
 vardecl	: NUMBER(ID, int)				1 { var(p); }
@@ -154,25 +154,24 @@ instrs 	: STMT(instrs, instr)							1 {}
 %! if elif else
 ifcond 	: expr 											1 { ifvec[++iflvl][0] = ++lbl; fprintf(yyout, pfJZ, mklbl(ifvec[iflvl][1] = ++lbl));}
 eicond 	: expr											1 { fprintf(yyout, pfJZ, mklbl(ifvec[iflvl][1] = ++lbl)); }
-instr 	: FI(THEN(IF(ifcond, ifblock), elifs), else)	1 { fprintf(yyout, pfLABEL, mklbl(ifvec[iflvl][0])); iflvl--; }
-elifs 	: ELIF(elifs, IF(eicond, ifblock))				1 {}
+instr 	: FI(THEN(IF(ifcond, ifbody), elifs), else)		1 { fprintf(yyout, pfLABEL, mklbl(ifvec[iflvl][0])); iflvl--; }
+elifs 	: ELIF(elifs, IF(eicond, ifbody))				1 {}
 elifs 	: NIL											1 {}
 else 	: STMT(instrs, loop)							1 {}
 else	: NIL											1 {}
-ifblock : STMT(instrs, loop)							1 { fprintf(yyout, pfJMP pfLABEL, mklbl(ifvec[iflvl][0]), mklbl(ifvec[iflvl][1])); }
+ifbody 	: STMT(instrs, loop)							1 { fprintf(yyout, pfJMP pfLABEL, mklbl(ifvec[iflvl][0]), mklbl(ifvec[iflvl][1])); }
 
 %! for loop
-loop 	: ret											1 {}
-loop 	: REPEAT										1 {}
-loop 	: STOP											1 {}
-
-instr 	: FOR(UNTIL(fbegin, fcond), STEP(block, instr))	1 { fprintf(yyout, pfJMP pfLABEL, mklbl(LEFT_CHILD(LEFT_CHILD(p))->place), mklbl(RIGHT_CHILD(LEFT_CHILD(p))->place)); }
-fbegin	: instr											1 { fprintf(yyout, pfLABEL, mklbl(p->place = ++lbl)); }
-fcond	: expr											1 { fprintf(yyout, pfJNZ, mklbl(p->place = ++lbl)); }
-block 	: STMT(instrs, loop)							1 {}
+instr 	: FOR(UNTIL(fbegin, fcond), STEP(forbody, instr))	1 { fprintf(yyout, pfJMP pfLABEL, mklbl(LEFT_CHILD(LEFT_CHILD(p))->place), mklbl(forvec[forlvl])); forlvl--; }
+fbegin	: instr												1 { fprintf(yyout, pfLABEL, mklbl(p->place = ++lbl)); }
+fcond	: expr												1 { fprintf(yyout, pfJNZ, mklbl(forvec[++forlvl] = ++lbl)); lbl++; }
+forbody	: STMT(instrs, loop)								1 { fprintf(yyout, pfLABEL, mklbl(forvec[forlvl]+1)); }
+loop 	: REPEAT											1 { fprintf(yyout, pfJMP, mklbl(forvec[forlvl]+1)); }
+loop 	: STOP												1 { fprintf(yyout, pfJMP, mklbl(forvec[forlvl])); }
+loop 	: ret												1 {}
 
 instr 	: expr							1 { fprintf(yyout, pfTRASH, 4); }
-instr 	: ALLOC(expr, lval)				1 {}
+instr 	: ALLOC(expr, lval)				1 { }
 instr 	: PRINT(expr)					leftStr { fprintf(yyout, pfCALL pfTRASH pfPUSH, "_prints", pfWORD); }
 instr 	: PRINT(expr)					2 { fprintf(yyout, pfCALL pfTRASH pfPUSH, "_printi", 4); }
 

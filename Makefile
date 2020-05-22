@@ -36,4 +36,4 @@ clean::
 	make -C $(LIB) clean
 	make -C $(RUN) clean
 	#make -C $(EXS) clean
-	rm -f *.o *.run $(LANG) $(LDLIBS) lex.yy.c y.tab.c y.tab.h y.output yyselect.c *.asm *~
+	rm -f *.min *.o *.run $(LANG) $(LDLIBS) lex.yy.c y.tab.c y.tab.h y.output yyselect.c *.asm *~
