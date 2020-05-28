@@ -1,0 +1,12 @@
+program
+	forward number x;
+	forward number y;
+	forward string s;
+	forward string str;
+	forward array v[10];
+	forward array vec[10]
+start
+	x! str!
+	y! str!
+	vec[2]! str!
+end

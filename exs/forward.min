@@ -1,0 +1,14 @@
+module
+function forward number atoi string s done;
+function forward number argc done;
+function forward string argv number n done;
+function forward number atoi string s done;
+function forward number argc done;
+function forward string argv number n done;
+function forward number atoi string s done;
+function forward number argc done;
+function forward string argv number n done;
+function forward number atoi string s done;
+function forward number argc done;
+function forward string argv number n done
+end

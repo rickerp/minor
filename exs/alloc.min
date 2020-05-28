@@ -1,0 +1,15 @@
+program
+number size;
+number i;
+array v
+start
+	size := ?;
+	v # size;
+	for i := 0 until i = size step i := i + 1 do
+		v[i] := ?;
+	done
+	for i := 0 until i = size step i := i + 1 do
+		v[i]! " "!
+	done
+	"\n"!
+end

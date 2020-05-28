@@ -1,0 +1,9 @@
+program
+	function void printn number n; number base do
+		number a;
+		a := n / base;
+		if a then printn(a, base); fi
+		n % base !
+start
+	printn(?,?); "\n"!
+end

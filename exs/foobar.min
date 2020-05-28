@@ -1,0 +1,11 @@
+program
+function forward number foo number n done;
+function public number bar number n do
+  if n > 100 then return n fi
+  return foo(n+3);
+function public number foo number n do
+  n! "\n"!
+  return bar(n+1)
+start
+  foo(20);
+end

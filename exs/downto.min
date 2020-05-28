@@ -1,0 +1,6 @@
+program start number x;
+  for x := ? until x = 0 step x := x - 1 do
+    x! "\n"!
+  done
+  x! "\n"!
+end

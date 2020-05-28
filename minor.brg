@@ -16,6 +16,7 @@
 #define EXTMAX 100
 #define IFMAX 20
 #define FORMAX 20
+#define ALLOCMAX 50
 
 #ifndef U_
 #define U_ "_"
@@ -26,13 +27,16 @@ static void yytrace(NODEPTR_TYPE p, int eruleno, int cost, int bestcost);
 
 extern FILE *yyout;
 
-int ifvec[IFMAX][2]; /* [ { if_end, current_elif }, {...iflvl2...}, ... ] */
-int iflvl = -1;
+static int ifvec[IFMAX][2]; /* [ { if_end, current_elif }, {...iflvl2...}, ... ] */
+static int iflvl = -1;
 
-int forvec[FORMAX];
-int forlvl = -1;
+static int forvec[FORMAX];
+static int forlvl = -1;
 
-static char *extvec[EXTMAX];
+static char* toalloc[ALLOCMAX];
+static int tacnt = 0;
+
+static char* extvec[EXTMAX];
 static int extcnt;
 
 int lbl;
@@ -62,8 +66,6 @@ static void cmp(Node* n, char *op) {
 }
 
 static void globalvar(Node* p) {
-	puts("\n\n\nENTROU AQUI\n\n\n\n");
-
 	int type = p->info;
 	if (p->attrib == VAR) p = LEFT_CHILD(p);
 	char* id = LEFT_CHILD(p)->value.s;
@@ -84,23 +86,55 @@ static void globalvar(Node* p) {
 	else fprintf(yyout, pfID, mklbl(lbl));
 }
 
+static void allocvecs() {
+	for (int i = 0; i < tacnt; i++) {
+		Node *dim;
+		int off = IDfind(toalloc[i], (void**)&dim);
+		if (dim != 0 && dim->attrib == DIM && dim->value.i > 0) {
+			fprintf(yyout, pfIMM pfALLOC pfSP pfLOCA, dim->value.i * 4, off*-4);
+			IDreplace(off, toalloc[i], 0);
+		}
+	}
+}
+
+static void handlevar(char* id, int type, int index) {
+	int off = IDfind(id, (void**)IDtest); 
+	
+	if (index && tTYPE(type) == tVEC) fprintf(yyout, pfIMM pfMUL, 4);
+
+	if(off == -1) fprintf(yyout, pfADDR, id);
+	else fprintf(yyout, pfLOCAL, off*-4); 
+
+	if (index) fprintf(yyout, pfLOAD pfADD);
+}
+
+static void aritmvecs(Node *n) {
+	if (tTYPE(n->info) == tVEC) {
+		if (tTYPE(LEFT_CHILD(n)->info) == tINT) 
+			fprintf(yyout, pfSWAP);
+		fprintf(yyout, pfIMM pfMUL, 4); 
+	}
+}
+
+static int isCnst(Node *n) { return n->info & tCNST ? 1 : CMPVAL; }
 static int isInt(Node *n) { return tTYPE(n->info) == tINT ? 1 : CMPVAL; }
 static int isStr(Node *n) { return tTYPE(n->info) == tSTR ? 1 : CMPVAL; }
 static int leftInt(Node *n) { return tTYPE(LEFT_CHILD(n)->info) == tINT ? 1 : CMPVAL; }
 static int leftStr(Node *n) { return tTYPE(LEFT_CHILD(n)->info) == tSTR ? 1 : CMPVAL; }
 static int leftZero(Node *n) { return LEFT_CHILD(n)->value.i == 0 ? 1 : CMPVAL; }
+static int rightStr(Node *n) { return tTYPE(RIGHT_CHILD(n)->info) == tSTR ? 1 : CMPVAL; }
 %}
 %term STMT=';' PRINT='!' ALLOC='#' INDEX='[' SCAN='?' CALL='(' PARAM=','
 %term ADD='+' SUB='-' MUL='*' DIV='/' MOD='%' POW='^' 
 %term EQ='=' GT='>' LT='<' AND='&' OR='|' NOT='~' 
 %include "y.tab.h"
 %%
-file	: PROGRAM(decls, FUNCTION(fcname, FARGS(NIL, START(fcvars, instrs))))	1 { fprintf(yyout, pfIMM pfPOP pfLEAVE pfRET, 0); puts("POP\n"); IDpop(); }
-file	: MODULE(decls)											1 {}
+file	: PROGRAM(decls, FUNCTION(fcname, FARGS(NIL, START(fcvars, instrs))))	1 { fprintf(yyout, pfIMM pfPOP pfLEAVE pfRET, 0); IDpop(); }
+file	: MODULE(decls)															1 {}
 
 fcv 	: NIL											1 {}
 fcv 	: ARGS(fcv, vardecl)							1 {}
-fcvars 	: fcv											1 { fprintf(yyout, pfENTER, lclvars*4);  }
+fcvars 	: fcv											1 { fprintf(yyout, pfENTER, lclvars*4); allocvecs(); }
 
 %! declarations
 
@@ -110,18 +144,27 @@ decls 	: DECL(decls, decl)								1 {}
 decl	: NIL											1 {}
 decl 	: FUNCTION(fcname, FARGS(fcvars, fcbody))		1 {}
 decl 	: FUNCTION(fcname, FARGS(NIL, fcbody))			1 {}
-fcname 	: END(ID, INT)									1 { fprintf(yyout, pfTEXT pfALIGN pfGLOBL pfLABEL, mkfunc(LEFT_CHILD(p)->value.s), pfFUNC, mkfunc(LEFT_CHILD(p)->value.s)); puts("PUSH\n"); IDpush(); }	
+fcname 	: END(ID, INT)									1 { fprintf(yyout, pfTEXT pfALIGN pfGLOBL pfLABEL, mkfunc(LEFT_CHILD(p)->value.s), pfFUNC, mkfunc(LEFT_CHILD(p)->value.s)); IDpush(); }	
 
 decl 	: VAR(NUMBER(ID, int)) 							1 { globalvar(p); }
-decl 	: VAR(STRING(ID, str))							1 { globalvar(p); }
-decl 	: VAR(ARRAY(ID, arr))							1 { globalvar(p); }
+decl 	: VAR(STRING(ID, str))							2 { globalvar(p); }
+decl 	: VAR(ARRAY(ID, arr))							2 { globalvar(p); }
+decl 	: VAR(STRING(ID, strcnst))						isCnst { globalvar(p); }
+decl 	: VAR(ARRAY(ID, arrcnst))						isCnst { globalvar(p); }
 
-vardecl	: NUMBER(ID, NIL)								1 { IDnew(++lclvars, LEFT_CHILD(p)->value.s, 0); puts("NEW\n"); }
-vardecl	: STRING(ID, NIL)								1 { IDnew(++lclvars, LEFT_CHILD(p)->value.s, 0); puts("NEW\n"); }
-vardecl	: ARRAY(ID, NIL)								1 { IDnew(++lclvars, LEFT_CHILD(p)->value.s, 0); puts("NEW\n"); }
+vardecl	: NUMBER(ID, NIL)								1 { IDnew(++lclvars, LEFT_CHILD(p)->value.s, 0); }
+vardecl	: STRING(ID, NIL)								1 { IDnew(++lclvars, LEFT_CHILD(p)->value.s, 0); }
+vardecl	: ARRAY(ID, NIL)								1 { IDnew(++lclvars, LEFT_CHILD(p)->value.s, 0); }
+vardecl	: ARRAY(ID, INTS(INT, NIL))						1 { toalloc[tacnt++] = LEFT_CHILD(p)->value.s; IDnew(++lclvars, LEFT_CHILD(p)->value.s, intNode(DIM, LEFT_CHILD(RIGHT_CHILD(p))->value.i)); }
 
 int 	: INT											1 {}
 int 	: NIL											1 {}
+
+arrcnst : NIL											1 {}
+arrcnst : INTS(INT, intsc)								leftZero {}
+arrcnst : INTS(INT, intsc)								2 { fprintf(yyout, pfBYTE, 4*(LEFT_CHILD(p)->value.i - ((int)RIGHT_CHILD(p)->place))); }
+intsc 	: NIL											1 { fprintf(yyout, pfRODATA pfALIGN pfLABEL, mklbl(++lbl)); p->place = 0; }
+intsc 	: INTS(intsc, INT)								1 { fprintf(yyout, pfINTEGER, RIGHT_CHILD(p)->value.i); p->place = LEFT_CHILD(p)->place + 1; }
 
 arr 	: NIL											1 {}
 arr 	: INTS(INT, ints)								leftZero {}
@@ -129,9 +172,13 @@ arr 	: INTS(INT, ints)								2 { fprintf(yyout, pfBYTE, 4*(LEFT_CHILD(p)->value
 ints 	: NIL											1 { fprintf(yyout, pfDATA pfALIGN pfLABEL, mklbl(++lbl)); p->place = 0; }
 ints 	: INTS(ints, INT)								1 { fprintf(yyout, pfINTEGER, RIGHT_CHILD(p)->value.i); p->place = LEFT_CHILD(p)->place + 1; }
 
+strcnst : charsc										1 { fprintf(yyout, pfCHAR, 0); }
+charsc	: CHARS(charsc, char)							1 {}
+charsc	: NIL											1 { fprintf(yyout, pfRODATA pfALIGN pfLABEL, mklbl(++lbl)); }		
+
 str		: chars											1 { fprintf(yyout, pfCHAR, 0); }
 chars	: CHARS(chars, char)							1 {}
-chars 	: NIL											1 { fprintf(yyout, pfRODATA pfALIGN pfLABEL, mklbl(++lbl)); }		
+chars 	: NIL											1 { fprintf(yyout, pfDATA pfALIGN pfLABEL, mklbl(++lbl)); }		
 
 char 	: INT											1 { fprintf(yyout, pfCHAR, (char) p->value.i); }
 char 	: CHAR											1 { fprintf(yyout, pfCHAR, (char) p->value.i); }
@@ -143,8 +190,8 @@ fcbody 	: body											1 {}
 body 	: START(fcvars, STMT(instrs, ret))				1 {}
 body 	: START(NIL, STMT(instrs, ret))					1 {}
 
-ret 	: RETURN(NIL)									1 {}
-ret 	: RETURN(expr)									1 {}
+ret 	: RETURN(NIL)									1 { fprintf(yyout, pfIMM pfPOP pfLEAVE pfRET, 0); }
+ret 	: RETURN(expr)									1 { fprintf(yyout, pfPOP pfLEAVE pfRET); }
 ret 	: NIL											1 {}
 
 instrs 	: NIL											1 { fprintf(yyout, pfTEXT pfALIGN); }
@@ -170,31 +217,35 @@ loop 	: STOP												1 { fprintf(yyout, pfJMP, mklbl(forvec[forlvl])); }
 loop 	: ret												1 {}
 
 instr 	: expr							1 { fprintf(yyout, pfTRASH, 4); }
-instr 	: ALLOC(expr, lval)				1 {}
+instr 	: ALLOC(expr, ID)				1 { if (tTYPE(RIGHT_CHILD(p)->info) == tVEC) fprintf(yyout, pfIMM pfMUL, 4); 
+											fprintf(yyout, pfALLOC pfSP); 
+											int off = IDfind(RIGHT_CHILD(p)->value.s, (void**)IDtest);
+											if (off == -1) 
+												fprintf(yyout, pfADDRA, RIGHT_CHILD(p)->value.s);
+											else fprintf(yyout, pfLOCA, off*-4); } 
 instr 	: PRINT(expr)					leftStr { fprintf(yyout, pfCALL pfTRASH pfPUSH, "_prints", pfWORD); }
 instr 	: PRINT(expr)					2 { fprintf(yyout, pfCALL pfTRASH pfPUSH, "_printi", 4); }
 
-lval 	: ID							1 { int off = IDfind(p->value.s, (void**)IDtest); printf("FIND: %d\n", off);
-											if(off == -1) fprintf(yyout, pfADDR, p->value.s);
-											else fprintf(yyout, pfLOCAL, off*-4); }
-lval 	: INDEX(expr, ID)				2 { fprintf(yyout, pfIMM pfMUL pfADDR pfLOAD pfADD, RIGHT_CHILD(p)->info == tSTR ? 1 : 4, RIGHT_CHILD(p)->value.s); }
+lval 	: ID							1 { handlevar(p->value.s, p->info, 0); }
+lval 	: INDEX(expr, ID)				1 { p->info = tTYPE(RIGHT_CHILD(p)->info) == tSTR ? CHAR : INT; 
+											handlevar(RIGHT_CHILD(p)->value.s, RIGHT_CHILD(p)->info, 1); }
 
 lits 	: CHARS(NIL, INT) 				1 { fprintf(yyout, pfIMM, RIGHT_CHILD(p)->value.i); }
 lits 	: CHARS(NIL, CHAR) 				1 { fprintf(yyout, pfIMM, RIGHT_CHILD(p)->value.i); }
-lits 	: str							2 { fprintf(yyout, pfTEXT pfALIGN pfADDR, mklbl(lbl)); }
+lits 	: strcnst						1 { fprintf(yyout, pfTEXT pfALIGN pfADDR, mklbl(lbl)); }
 
 expr 	: lits 							1 {}
-expr	: lval							1 { fprintf(yyout, (p->attrib == '[' && RIGHT_CHILD(p)->info == tSTR) ? pfLDCHR : pfLOAD); }
+expr	: lval							1 { fprintf(yyout, (p->attrib == '[' && tTYPE(RIGHT_CHILD(p)->info) == tSTR) ? pfLDCHR : pfLOAD); }
 expr	: SCAN							1 { fprintf(yyout, pfCALL pfPUSH, "_readi"); }
 expr	: ADDR(lval)					1 {}
-expr	: DEF(rval, lval)				1 { fprintf(yyout, pfSTORE); }
+expr	: DEF(rval, lval)				1 { fprintf(yyout, RIGHT_CHILD(p)->info == CHAR ? pfSTCHR : pfSTORE); }
 rval 	: expr							1 { fprintf(yyout, pfDUP); }
-expr	: CALL(ID, exprs)				1 {}
+expr	: CALL(ID, exprs)				1 { }
 exprs 	: PARAM(expr, NIL)				1 {}
 exprs	: PARAM(expr, exprs)			1 {}
 
-expr	: ADD(expr, expr)				1 { fprintf(yyout, pfADD); }
-expr	: SUB(expr, expr)				1 { fprintf(yyout, pfSUB); }
+expr	: ADD(expr, expr)				1 { aritmvecs(p); fprintf(yyout, pfADD); }
+expr	: SUB(expr, expr)				1 { aritmvecs(p); fprintf(yyout, pfSUB); }
 expr	: MUL(expr, expr)				1 { fprintf(yyout, pfMUL); }
 expr	: DIV(expr, expr)				1 { fprintf(yyout, pfDIV); }
 expr	: MOD(expr, expr)				1 { fprintf(yyout, pfMOD); }

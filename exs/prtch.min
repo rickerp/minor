@@ -1,0 +1,5 @@
+program
+string s := "hello world!"
+start
+	s[?]! "\n"!
+end

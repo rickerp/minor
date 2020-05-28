@@ -1,0 +1,16 @@
+module
+	function forward number compare number a; number b done;
+	function public void bubble array v; number n do
+		number i;
+		number j;
+		number aux;
+		for i := 0 until i = n - 1 step i := i + 1 do
+			for j := 0 until j = n - 1 - i step j := j + 1 do
+				if compare(v[j+1], v[j]) > 0 then
+					aux := v[j];
+					v[j] := v[j+1];
+					v[j+1] := aux;
+				fi
+			done
+		done
+end

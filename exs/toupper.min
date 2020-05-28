@@ -1,0 +1,17 @@
+program
+	function forward string readln string buf; number len done;
+	function forward number strlen string buf done;
+	string s;
+	number len;
+	number i
+start
+	s # 100;
+	readln(s, 100);
+	len := strlen(s);
+	for i := 0 until i = len step i := i + 1 do
+		if s[i] >= 'a' & s[i] <= 'z' then
+			s[i] := s[i] + 'A' - 'a';
+		fi
+	done
+	s! "\n"!
+end

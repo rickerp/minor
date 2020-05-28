@@ -1,0 +1,4 @@
+module
+	public number var;
+	public const number grosa := 144
+end

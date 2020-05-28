@@ -1,0 +1,19 @@
+program
+	function forward number argc done;
+	function forward string argv number n done;
+	function forward number cmps string a; string b done;
+	string a;
+	string b
+start
+	if argc > 2 then
+		a := argv(1);
+		b := argv(2);
+		a > b !
+		a >= b !
+		a < b !
+		a <= b !
+		a = b !
+		a ~= b !
+		"\n" !
+	fi
+end

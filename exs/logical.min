@@ -1,0 +1,7 @@
+program start
+	number x;
+	number y;
+	x := ?;
+	y := ?;
+	x! " "! y! " "! x & y! " "! x | y! " "! ~x! " "! ~y! "\n"!
+end

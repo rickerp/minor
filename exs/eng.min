@@ -1,0 +1,18 @@
+program
+	const string suf := " KMGTPE";
+	string exp := " \n";
+	number i;
+	number val;
+	number pow
+start
+	pow := 1;
+	val := ?;
+	for i := 0 until i = 7 step i := i + 1 do
+		if val / pow = 0 then
+			stop
+		fi
+		pow := pow * 1000;
+	done
+	exp[0] := suf[i-1];
+	val / (pow / 1000)! exp!
+end

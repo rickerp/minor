@@ -1,0 +1,16 @@
+program
+  array v[10] := 12, 34, 56, 78, 90;
+  array z[9];
+  number x
+start
+  v[8] := 89;
+
+  for x := 0 until x = 9 step x := x + 1 do
+    z[x] := v[x+1] - v[x];
+    z[x]! "\n"!
+  done
+
+  for x := 0 until x = 10 step x := x + 1 do
+    v[x]! "\n"!
+  done
+end

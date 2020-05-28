@@ -1,0 +1,12 @@
+program
+number i;
+number n;
+array v[10] := 12, 23, 34, 45, 56, 67, 78, 89, 90, 99
+start
+	n := ?;
+	v[n] := ?;
+	for i := 0 until i = 10 step i := i + 1 do
+		v[i]! " "!
+	done
+	"\n"!
+end

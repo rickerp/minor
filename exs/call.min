@@ -1,0 +1,7 @@
+program
+	function void f number a; number b do "f()\n"! ;
+	function number g do "g()\n"! return 1 ;
+	function number h do "h()\n"! return 1
+start
+	f(g, h);
+end

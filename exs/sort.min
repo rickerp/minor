@@ -1,0 +1,19 @@
+program
+	function public number compare number a; number b do
+		return a - b;
+	function forward void bubble array v; number n done;
+	number n;
+	number i;
+	array v[100]
+start
+	for i:= 0 until i = 100 step i := i + 1 do
+		n := ?;
+		if n < 0 then stop fi
+		v[i] := n;
+	done
+	bubble(v, i);
+	for n := 0 until n = i step n := n + 1 do
+		v[n]! " "!
+	done
+	"\n"!
+end

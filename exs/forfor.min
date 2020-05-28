@@ -1,0 +1,11 @@
+program
+number x;
+number y
+start
+	for x := 0 until x = 5 step x := x + 1 do
+		for y := 0 until y = 3 step y := y + 1 do
+			x! ", "! y! "\n"!
+		done
+	done
+end
+

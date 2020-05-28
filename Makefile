@@ -27,7 +27,8 @@ arm::
 	$(MAKE) $(MFLAGS) CC=gcc ARCH='-DpfARM' RUN=arm AS=as LD=ld
 
 exs::
-	./$(EXS)/run.sh
+	make -C $(EXS)
+	./$(EXS)/run
 
 tests:: $(LANG)
 	make -C $(TESTS)

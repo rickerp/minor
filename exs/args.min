@@ -1,0 +1,14 @@
+program
+	function forward number argc done;
+	function forward string argv number n done;
+	function forward string envp number n done;
+	string null
+start
+	number x;
+	"argc: "! argc! "\n"!
+	for x := 0 until x = argc step x := x + 1 do
+		x! ": "! argv(x)! "\n"!
+	done
+$$	"environment:\n"!
+$$	for x := 0 until envp(x) = null step x := x + 1 do envp(x)! "\n"! done
+end

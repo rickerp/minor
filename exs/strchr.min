@@ -1,0 +1,14 @@
+program
+number i;
+number n;
+string s := "hello world!"
+start
+	n := ?;
+	for i := 0 until s[i] = 0 step i := i + 1 do
+		if s[i] = n then
+			"found at "! i! "\n"!
+			return 1
+		fi
+	done
+	"not found \n"!
+end

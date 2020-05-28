@@ -1,0 +1,8 @@
+module
+	public number x;
+	public number y := 12;
+	public string s;
+	public string str := 32 97 98 10;
+	public array v[10];
+	public array vec[10] := 1, 2, 3, 4
+end

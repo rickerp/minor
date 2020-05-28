@@ -1,0 +1,12 @@
+program
+number i;
+number n
+start
+	n := ?;
+	for i := 0 until i = 30 step i := i + 1 do
+		if i % n = 0 then
+			repeat
+		fi
+		i! "\n"!
+	done
+end

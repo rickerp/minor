@@ -1,0 +1,4 @@
+program start
+  "insira um valor "!
+  ?! "\n"!
+end

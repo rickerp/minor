@@ -1,0 +1,7 @@
+program start
+  number x;
+
+  for x := 2 until x = 13 step x := x + 1 do
+    x! "\n"!
+  done
+end

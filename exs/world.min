@@ -1,0 +1,12 @@
+Texto até "program" é ignorado.
+program
+  $$ zona de declarações!
+start
+  $
+  "olá pessoal!\n"!
+  $
+  "hi world!\n"!
+  $
+  "olé touro!\n"!
+  $
+end

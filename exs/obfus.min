@@ -1,0 +1,6 @@
+program
+string msg := '\4F' 108 "á" 0x20 0160 0b1100101 "ss" 0x6F 97 108 041 0xA
+start
+  msg!
+end
+

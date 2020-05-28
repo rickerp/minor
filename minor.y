@@ -29,7 +29,7 @@ static int ret, cycle;
 %type<n> ints	eqbody	body	ret	loop	instrs
 %type<n> instr	elifs	else	expr	exprs	block	main
 
-%token FARGS CHARS INTS ADDR VAR ARGS DECL NIL
+%token FARGS CHARS INTS ADDR VAR ARGS DECL NIL DIM
 
 %right DEF
 %left '|'
@@ -43,10 +43,10 @@ static int ret, cycle;
 %nonassoc UMINUS
 
 %%
-file	: PROGRAM decls START { func="main"; ret=tPUB + tINT + tFUNC; IDpush(); } main END
-	 { IDpop(); evaluate(binNode(PROGRAM, $2, binNode(FUNCTION, binNode(END, TID(func), TINT(ret)), binNode(FARGS, nilNode(NIL), $5)))); }
-	| MODULE decls END
-	 { evaluate(uniNode(MODULE, $2)); }
+file	: PROGRAM { IDpush(); } decls START { func="main"; ret=tPUB + tINT + tFUNC; IDpush(); } main END
+	 { IDpop(); IDpop(); evaluate(binNode(PROGRAM, $3, binNode(FUNCTION, binNode(END, TID(func), TINT(ret)), binNode(FARGS, nilNode(NIL), $6)))); }
+	| MODULE { IDpush(); } decls END
+	 { IDpop(); evaluate(uniNode(MODULE, $3)); }
 	;
 
 decls	:			{ $$ = nilNode(NIL); }

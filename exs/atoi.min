@@ -1,0 +1,9 @@
+program
+function forward number atoi string s done;
+function forward number argc done;
+function forward string argv number n done
+start
+  if argc > 1 then
+     atoi(argv(1))! "\n"!
+  fi
+end

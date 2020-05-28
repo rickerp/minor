@@ -1,0 +1,15 @@
+program
+number cnt := 0;
+array vector[3] := 1, 2, 3;
+function array primeira array m ; number n ; string v do
+  cnt := cnt + 1;
+  return m;
+function number segunda number m ; string n ; array v do
+  cnt := cnt + 1;
+  return m
+start
+  array vec;
+  cnt := segunda(12, "abc", vector);
+  vec := primeira(vector, vector[0], "lixo");
+  cnt! " "! vec[2]! "\n"!
+end

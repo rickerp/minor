@@ -1,0 +1,9 @@
+program start
+  number b;
+  number e;
+  "calculo de potencias inteiras\nintroduza a base: "!
+  b := ?;
+  "introduza o expoente: "!
+  e := ?;
+  b! "^"! e! " = "! b^e! "\n"!
+end

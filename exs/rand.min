@@ -1,0 +1,11 @@
+program
+number seed := 100001;
+number sum;
+number i
+start
+	for i := ? until i <= 0 step i := i - 1 do
+		seed := (seed * 125) % 2796203;
+		sum := sum + seed % 1000;
+	done
+	sum! "\n"!
+end

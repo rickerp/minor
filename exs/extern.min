@@ -1,0 +1,7 @@
+program
+	forward number var;
+	forward const number grosa
+start
+	var := grosa;
+	var! "\n"!
+end

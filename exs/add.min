@@ -1,0 +1,5 @@
+program
+	function number func number n do return n+2
+start
+	func(?)! "\n"!
+end

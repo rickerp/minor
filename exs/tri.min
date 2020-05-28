@@ -1,0 +1,19 @@
+program $ triangulos $ start
+  number a;
+  number b;
+  number c;
+  a := ?;
+  b := ?;
+  c := ?;
+  if a < 1 | b < 1 | c < 1 then
+    "As dimensoes dos lados do triangulo devem ser todas positivas\n"!
+  elif a + b <= c | a + c <= b | c + b <= a then
+    "Não é triângulo\n"!
+  elif a = b & b = c then
+    "O triângulo é equilátero\n"!
+  elif a = b | b = c | c = a then
+    "O triângulo é isósceles\n"!
+  else
+    "O triângulo é escaleno\n"!
+  fi
+end

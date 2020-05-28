@@ -1,0 +1,7 @@
+program
+number n;
+number s
+start
+	for s := 0 until (n := ?) = 0 step s := s + n do done
+	s! "\n"!
+end

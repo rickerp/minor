@@ -1,0 +1,10 @@
+program start
+	number x;
+	x := ?;
+	if x > 5 then "big\n"!
+	elif x = 4 then "quatro\n"!
+	elif x = 3 then "três\n"!
+	elif x = 2 then "dois\n"!
+	elif x = 1 then "um\n"!
+	else "small\n"! fi
+end

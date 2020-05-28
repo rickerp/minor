@@ -1,0 +1,10 @@
+program
+number x
+start
+	x := ?;
+	if x > 0 then "positivo\n"!
+	else	if x < 0 then "negativo\n"!
+		else "nulo\n"!
+		fi
+	fi
+end

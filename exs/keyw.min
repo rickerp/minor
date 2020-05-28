@@ -1,0 +1,7 @@
+program
+ number module := 1;
+ number program := 3;
+ string end := 0x0a 0
+ start
+ (module + program)! end!
+end
