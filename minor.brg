@@ -37,7 +37,7 @@ static char* toalloc[ALLOCMAX];
 static int tacnt = 0;
 
 static char* extvec[EXTMAX];
-static int extcnt;
+static int extcnt = 0;
 
 int lbl;
 int lclvars;
@@ -84,6 +84,10 @@ static void globalvar(Node* p) {
 	fprintf(yyout, pfALIGN pfLABEL, id);
 	if (tTYPE(type) == tINT) fprintf(yyout, pfINTEGER, val->value.i);
 	else fprintf(yyout, pfID, mklbl(lbl));
+
+	for (int i = 0; i < extcnt; i++) 
+		if(extvec[i] && !strcmp(extvec[i], id)) 
+			extvec[i] = 0;
 }
 
 static void allocvecs() {
@@ -116,6 +120,9 @@ static void aritmvecs(Node *n) {
 	}
 }
 
+static int noDim(Node *n) { return LEFT_CHILD(RIGHT_CHILD(n))->value.i == 0 ? 1 : CMPVAL; }
+static int isFwd(Node *n) { return (RIGHT_CHILD(LEFT_CHILD(n))->value.i & tFWD) ? 1 : CMPVAL; }
+static int isFunc(Node *n) { return n->info & tFUNC ? 1 : CMPVAL; }
 static int isCnst(Node *n) { return n->info & tCNST ? 1 : CMPVAL; }
 static int isInt(Node *n) { return tTYPE(n->info) == tINT ? 1 : CMPVAL; }
 static int isStr(Node *n) { return tTYPE(n->info) == tSTR ? 1 : CMPVAL; }
@@ -129,12 +136,36 @@ static int rightStr(Node *n) { return tTYPE(RIGHT_CHILD(n)->info) == tSTR ? 1 : 
 %term EQ='=' GT='>' LT='<' AND='&' OR='|' NOT='~' 
 %include "y.tab.h"
 %%
-file	: PROGRAM(decls, FUNCTION(fcname, FARGS(NIL, START(fcvars, instrs))))	1 { fprintf(yyout, pfIMM pfPOP pfLEAVE pfRET, 0); IDpop(); }
-file	: MODULE(decls)															1 {}
+file	: PROGRAM(decls, decl)							1 { fprintf(yyout, pfIMM pfPOP pfLEAVE pfRET, 0); }
+file	: MODULE(decls)									1 {}
 
-fcv 	: NIL											1 {}
+fcname 	: END(ID, INT)									1 { if (RIGHT_CHILD(p)->value.i & tPUB) fprintf(yyout, pfGLOBL, mkfunc(LEFT_CHILD(p)->value.s), pfFUNC);
+															fprintf(yyout, pfTEXT pfALIGN pfLABEL, mkfunc(LEFT_CHILD(p)->value.s)); 
+															for (int i = 0; i < extcnt; i++) 
+																if(extvec[i] && !strcmp(extvec[i], mkfunc(LEFT_CHILD(p)->value.s))) 
+																	extvec[i] = 0; 
+															IDpush(); }	
+fwdname : END(ID, INT)									1 { extvec[extcnt++] = strdup(mkfunc(LEFT_CHILD(p)->value.s)); IDpush(); }
+
+fcv 	: NIL											1 { lclvars = 0; }
 fcv 	: ARGS(fcv, vardecl)							1 {}
 fcvars 	: fcv											1 { fprintf(yyout, pfENTER, lclvars*4); allocvecs(); }
+
+fcargs	: ARGS(fcargs, fcarg)							1 {}
+fcargs  : NIL											1 { lclvars = -1; }
+fcarg	: NUMBER(ID, NIL)								1 { IDnew(--lclvars, LEFT_CHILD(p)->value.s, 0); }
+fcarg	: STRING(ID, NIL)								1 { IDnew(--lclvars, LEFT_CHILD(p)->value.s, 0); }
+fcarg	: ARRAY(ID, INTS(INT, NIL))						noDim { IDnew(--lclvars, LEFT_CHILD(p)->value.s, 0); }
+fcarg	: ARRAY(ID, INTS(INT, NIL))						2 { toalloc[tacnt++] = LEFT_CHILD(p)->value.s; IDnew(--lclvars, LEFT_CHILD(p)->value.s, intNode(DIM, LEFT_CHILD(RIGHT_CHILD(p))->value.i)); }
+
+
+fcbody 	: NIL											1 {}
+fcbody 	: body											1 {}
+
+body 	: START(fcvars, instret)						1 {}
+
+instret : instrs										1 {}
+instret : STMT(instrs, ret)								1 {}
 
 %! declarations
 
@@ -142,9 +173,8 @@ decls	: NIL 											1 {}
 decls 	: DECL(decls, decl)								1 {}
 
 decl	: NIL											1 {}
-decl 	: FUNCTION(fcname, FARGS(fcvars, fcbody))		1 {}
-decl 	: FUNCTION(fcname, FARGS(NIL, fcbody))			1 {}
-fcname 	: END(ID, INT)									1 { fprintf(yyout, pfTEXT pfALIGN pfGLOBL pfLABEL, mkfunc(LEFT_CHILD(p)->value.s), pfFUNC, mkfunc(LEFT_CHILD(p)->value.s)); IDpush(); }	
+decl 	: FUNCTION(fcname, FARGS(fcargs, fcbody))		2 { fprintf(yyout, pfIMM pfPOP pfLEAVE pfRET, 0); IDpop(); }
+decl 	: FUNCTION(fwdname, FARGS(fcargs, fcbody))	isFwd { IDpop(); }
 
 decl 	: VAR(NUMBER(ID, int)) 							1 { globalvar(p); }
 decl 	: VAR(STRING(ID, str))							2 { globalvar(p); }
@@ -184,12 +214,6 @@ char 	: INT											1 { fprintf(yyout, pfCHAR, (char) p->value.i); }
 char 	: CHAR											1 { fprintf(yyout, pfCHAR, (char) p->value.i); }
 char 	: STR											1 { strtopf(p->value.s); }
 
-fcbody 	: NIL											1 {}
-fcbody 	: body											1 {}
-
-body 	: START(fcvars, STMT(instrs, ret))				1 {}
-body 	: START(NIL, STMT(instrs, ret))					1 {}
-
 ret 	: RETURN(NIL)									1 { fprintf(yyout, pfIMM pfPOP pfLEAVE pfRET, 0); }
 ret 	: RETURN(expr)									1 { fprintf(yyout, pfPOP pfLEAVE pfRET); }
 ret 	: NIL											1 {}
@@ -227,7 +251,7 @@ instr 	: PRINT(expr)					leftStr { fprintf(yyout, pfCALL pfTRASH pfPUSH, "_print
 instr 	: PRINT(expr)					2 { fprintf(yyout, pfCALL pfTRASH pfPUSH, "_printi", 4); }
 
 lval 	: ID							1 { handlevar(p->value.s, p->info, 0); }
-lval 	: INDEX(expr, ID)				1 { p->info = tTYPE(RIGHT_CHILD(p)->info) == tSTR ? CHAR : INT; 
+lval 	: INDEX(expr, ID)				1 { p->info = tINT; p->place = tTYPE(RIGHT_CHILD(p)->info) == tSTR;
 											handlevar(RIGHT_CHILD(p)->value.s, RIGHT_CHILD(p)->info, 1); }
 
 lits 	: CHARS(NIL, INT) 				1 { fprintf(yyout, pfIMM, RIGHT_CHILD(p)->value.i); }
@@ -235,14 +259,16 @@ lits 	: CHARS(NIL, CHAR) 				1 { fprintf(yyout, pfIMM, RIGHT_CHILD(p)->value.i);
 lits 	: strcnst						1 { fprintf(yyout, pfTEXT pfALIGN pfADDR, mklbl(lbl)); }
 
 expr 	: lits 							1 {}
+expr 	: ID 							isFunc { fprintf(yyout, pfCALL pfPUSH, mkfunc(p->value.s)); }
 expr	: lval							1 { fprintf(yyout, (p->attrib == '[' && tTYPE(RIGHT_CHILD(p)->info) == tSTR) ? pfLDCHR : pfLOAD); }
 expr	: SCAN							1 { fprintf(yyout, pfCALL pfPUSH, "_readi"); }
 expr	: ADDR(lval)					1 {}
-expr	: DEF(rval, lval)				1 { fprintf(yyout, RIGHT_CHILD(p)->info == CHAR ? pfSTCHR : pfSTORE); }
+expr	: DEF(rval, lval)				1 { fprintf(yyout, (RIGHT_CHILD(p)->attrib == '[' && tTYPE(RIGHT_CHILD(RIGHT_CHILD(p))->info) == tSTR) ? pfSTCHR : pfSTORE); }
 rval 	: expr							1 { fprintf(yyout, pfDUP); }
-expr	: CALL(ID, exprs)				1 { }
-exprs 	: PARAM(expr, NIL)				1 {}
-exprs	: PARAM(expr, exprs)			1 {}
+
+expr	: CALL(ID, args)				1 { fprintf(yyout, pfCALL pfTRASH pfPUSH, mkfunc(LEFT_CHILD(p)->value.s), (int)RIGHT_CHILD(p)->place * 4); }
+args 	: PARAM(expr, NIL)				1 { p->place = 1; }
+args	: PARAM(expr, args)				1 { p->place = 1 + RIGHT_CHILD(p)->place; }
 
 expr	: ADD(expr, expr)				1 { aritmvecs(p); fprintf(yyout, pfADD); }
 expr	: SUB(expr, expr)				1 { aritmvecs(p); fprintf(yyout, pfSUB); }
@@ -280,7 +306,9 @@ void evaluate(Node *p) {
 	extvec[extcnt++] = strdup("mpow");
 	extvec[extcnt++] = strdup("mstrcmp");
 
-	for (i = 0; i < extcnt; i++) fprintf(yyout, pfEXTRN, extvec[i]);
+	/* puts("\n\nPILHA:\n"); for (i=0; i < extcnt; i++) printf("pilha_elem: %s\n", extvec[i]); */
+
+	for (i = 0; i < extcnt; i++) if (extvec[i]) fprintf(yyout, pfEXTRN, extvec[i]);
 }
 
 #ifndef NOTRACE

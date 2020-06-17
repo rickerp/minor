@@ -77,39 +77,39 @@ fvars	: fvar			{ $$ = binNode(ARGS, nilNode(NIL), $1);
 	;
 
 vardecl	: NUMBER ID eqint	{ $$ = binNode(NUMBER, TID($2), $3); $$->info = tINT; }
-	| STRING ID eqstr	{ $$ = binNode(STRING, TID($2), $3); $$->info = tSTR; }
+	| STRING ID eqstr		{ $$ = binNode(STRING, TID($2), $3); $$->info = tSTR; }
 	| ARRAY ID vdim eqvec	{ $$ = binNode(ARRAY, TID($2), binNode(INTS, TINT($3), $4)); $$->info = tVEC; isDim($2, $3, $4); }
 	;
 
-vdim	: '[' INT ']'		{ $$ = $2; isDim(0, $2, 0); }
-	|			{ $$ = 0; }
+vdim	: '[' INT ']'	{ $$ = $2; isDim(0, $2, 0); }
+	|					{ $$ = 0; }
 	;
 
 qualif	: PUBLIC		{ $$ = tPUB; }
-	| FORWARD		{ $$ = tFWD; }
-	|			{ $$ = 0; }
+	| FORWARD			{ $$ = tFWD; }
+	|					{ $$ = 0; }
 	;
 
 const	: CONST			{ $$ = tCNST; }
-	|			{ $$ = 0; }
+	|					{ $$ = 0; }
 	;
 
 type	: NUMBER		{ $$ = tINT; }
-	| STRING		{ $$ = tSTR; }
-	| ARRAY			{ $$ = tVEC; }
+	| STRING			{ $$ = tSTR; }
+	| ARRAY				{ $$ = tVEC; }
 	;
 
 ftype	: type			{ $$ = $1; }
-	| VOID			{ $$ = tVOID; }
+	| VOID				{ $$ = tVOID; }
 	;
 
-eqint	:			{ $$ = nilNode(NIL); }
-	| DEF INT		{ $$ = intNode(INT, $2); }
+eqint	:				{ $$ = nilNode(NIL); }
+	| DEF INT			{ $$ = intNode(INT, $2); }
 	| DEF '-' INT		{ $$ = intNode(INT, -$3); }
 	;
 
-eqstr	:			{ $$ = nilNode(NIL); }
-	| DEF chars		{ isStr($$ = $2); }
+eqstr	:				{ $$ = nilNode(NIL); }
+	| DEF chars			{ isStr($$ = $2); }
 	;
 
 chars	: char			{ $$ = binNode(CHARS, nilNode(NIL), $1); $$->info = $1->info; }
@@ -117,22 +117,22 @@ chars	: char			{ $$ = binNode(CHARS, nilNode(NIL), $1); $$->info = $1->info; }
 	;
 
 char	: INT			{ $$ = TINT($1); $$->info = tINT; }
-	| CHAR			{ $$ = intNode(CHAR, $1); $$->info = tINT; }
-	| STR			{ $$ = strNode(STR, $1); $$->info = tSTR; }
+	| CHAR				{ $$ = intNode(CHAR, $1); $$->info = tINT; }
+	| STR				{ $$ = strNode(STR, $1); $$->info = tSTR; }
 	;
 
-eqvec	:			{ $$ = nilNode(NIL); }
-	| DEF ints		{ $$ = $2; }
+eqvec	:				{ $$ = nilNode(NIL); }
+	| DEF ints			{ $$ = $2; }
 	;
 
 ints	: INT			{ $$ = binNode(INTS, nilNode(NIL), intNode(INT, $1)); }
-	| '-' INT		{ $$ = binNode(INTS, nilNode(NIL), intNode(INT, -$2)); }
+	| '-' INT			{ $$ = binNode(INTS, nilNode(NIL), intNode(INT, -$2)); }
 	| ints ',' INT		{ $$ = binNode(INTS, $1, intNode(INT, $3)); }
 	| ints ',' '-' INT	{ $$ = binNode(INTS, $1, intNode(INT, -$4)); }
 	;
 
 eqbody	: DONE			{ $$ = nilNode(NIL); }
-	| DO body		{ $$ = $2; }
+	| DO body			{ $$ = $2; }
 	;
 
 main	: fvars ';' instrs
