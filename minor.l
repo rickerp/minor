@@ -38,6 +38,8 @@ H [A-Fa-f0-9]
 <CODE>"fi"		return FI;
 <CODE>"elif"		return ELIF;
 <CODE>"else"		return ELSE;
+<CODE>"switch"		return SWITCH;
+<CODE>"case"	return CASE;
 <CODE>"for"		return FOR;
 <CODE>"until"		return UNTIL;
 <CODE>"step"		return STEP;

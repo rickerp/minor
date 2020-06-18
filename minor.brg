@@ -222,6 +222,12 @@ ret 	: NIL											1 {}
 instrs 	: NIL											1 { fprintf(yyout, pfTEXT pfALIGN); }
 instrs 	: STMT(instrs, instr)							1 {}
 
+%! switch case
+instr 	: SWITCH(expr, cases)						1 {}
+cases 	: CASES(cases, CASE(expr, casebdy))			1 {}
+cases	: NIL										1 {}
+casebdy : STMT(instrs, loop)						1 {}
+
 %! if elif else
 ifcond 	: expr 												1 { ifvec[++iflvl][0] = ++lbl; fprintf(yyout, pfJZ, mklbl(ifvec[iflvl][1] = ++lbl));}
 eicond 	: expr												1 { fprintf(yyout, pfJZ, mklbl(ifvec[iflvl][1] = ++lbl)); }

@@ -21,7 +21,7 @@ static int ret, cycle;
 %token <i> INT CHAR
 %token <s> ID STR
 %token PROGRAM MODULE END PUBLIC FORWARD STRING NUMBER ARRAY FUNCTION VOID CONST
-%token IF THEN FI ELIF ELSE RETURN START FOR UNTIL STEP DO DONE REPEAT STOP
+%token IF THEN FI ELIF ELSE RETURN START FOR UNTIL STEP DO DONE REPEAT STOP SWITCH CASE CASES
 
 %type<n> lval	decls	gdecls	decl	vardecl	fvar	fvars
 %type<i> qualif	const	type	ftype	vdim
@@ -168,10 +168,14 @@ instr	: IF expr THEN block elifs else FI
 				{ $$ = binNode(FI, binNode(THEN, binNode(IF, $2, $4), $5), $6); }
 	| FOR expr UNTIL expr STEP expr DO { cycle++; } block DONE
 				{ $$ = binNode(FOR, binNode(UNTIL, $2, $4), binNode(STEP, $9, $6)); cycle--; }
+	| SWITCH expr cases DONE {$$ = binNode(SWITCH, $2, $3); }
 	| expr '!'		{ $$ = uniNode('!', $1); isPrint($1); }
 	| expr ';'		{ $$ = $1; }
 	| lval '#' expr ';'	{ $$ = binNode('#', $3, $1); isAlloc($1, $3); }
 	;
+
+cases 	: 							{ $$ = nilNode(NIL); }
+		| cases CASE expr block 	{ $$ = binNode(CASES, $1, binNode(CASE, $3, $4)); }
 
 elifs	:			{ $$ = nilNode(NIL); }
 	| elifs ELIF expr THEN block
