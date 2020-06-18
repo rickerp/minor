@@ -271,6 +271,9 @@ expr	: CALL(ID, args)				1 { fprintf(yyout, pfCALL pfTRASH pfPUSH, mkfunc(LEFT_C
 args 	: PARAM(expr, NIL)				1 { p->place = 1; }
 args	: PARAM(expr, args)				1 { p->place = 1 + RIGHT_CHILD(p)->place; }
 
+fimp 	: expr							1 { fprintf(yyout, pfNOT); }
+expr	: IMP(fimp, expr)				1 { fprintf(yyout, pfOR); }
+
 expr	: ADD(expr, expr)				1 { aritmvecs(p); fprintf(yyout, pfADD); }
 expr	: SUB(expr, expr)				1 { aritmvecs(p); fprintf(yyout, pfSUB); if (tTYPE(LEFT_CHILD(p)->info) == tVEC && tTYPE(RIGHT_CHILD(p)->info) == tVEC) fprintf(yyout, pfIMM pfDIV, 4);  }
 expr	: MUL(expr, expr)				1 { fprintf(yyout, pfMUL); }

@@ -39,6 +39,7 @@ static int ret, cycle;
 %left '<' '>' GE LE
 %left '+' '-'
 %left '*' '/' '%'
+%right IMP
 %right '^'
 %nonassoc UMINUS
 
@@ -191,6 +192,7 @@ expr	: chars			{ $$ = $1; }
 	| '?'			{ $$ = nilNode('?'); $$->info = tINT; }
 	| '&' lval		{ $$ = uniNode(ADDR, $2); $$->info = isAddr($$); }
 	| '(' expr ')'		{ $$ = $2; $$->info = $2->info; }
+	| expr IMP expr		{ $$ = binNode(IMP, $1, $3); $$->info = isInt($$, "=>"); }
 	| expr '+' expr		{ $$ = binNode('+', $1, $3); $$->info = isAddSub($$, "+"); }
 	| expr '-' expr		{ $$ = binNode('-', $1, $3); $$->info = isAddSub($$, "-"); }
 	| expr '*' expr		{ $$ = binNode('*', $1, $3); $$->info = isInt($$, "*"); }
@@ -205,7 +207,7 @@ expr	: chars			{ $$ = $1; }
 	| expr '>' expr		{ $$ = binNode('>', $1, $3); $$->info = isCmp($$, ">"); }
 	| expr '&' expr		{ $$ = binNode('&', $1, $3); $$->info = isInt($$, "&"); }
 	| expr '|' expr		{ $$ = binNode('|', $1, $3); $$->info = isInt($$, "|"); }
-	| '~' expr		{ $$ = uniNode('~', $2); $$->info = isUniInt($$, "~"); }
+	| '~' expr			{ $$ = uniNode('~', $2); $$->info = isUniInt($$, "~"); }
 	| '-' expr %prec UMINUS	{ $$ = uniNode(UMINUS, $2); $$->info = isUniInt($$, "-"); }
 	| lval DEF expr		{ $$ = binNode(DEF, $3, $1); $$->info = isAssign($$); }
 	| ID '(' exprs ')'	{ Node *n; int t = IDfind($1, (void**)&n); $$ = binNode('(', TID($1), $3); $$->user = n; $$->info = $$->SUB(0)->info = t; isCall($1, n, $3); }

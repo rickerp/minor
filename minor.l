@@ -17,6 +17,7 @@ H [A-Fa-f0-9]
 ^"program"		BEGIN CODE; return PROGRAM;
 ^"module"		BEGIN CODE; return MODULE;
 [a-zA-Z]+		;
+<CODE>"=>"		return IMP;
 <CODE>"<="		return LE;
 <CODE>">="		return GE;
 <CODE>"~="		return NE;
