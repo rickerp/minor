@@ -13,3 +13,4 @@ y.output
 yyselect.c
 *.asm
 *~
+/*.run
