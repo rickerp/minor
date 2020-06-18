@@ -1,0 +1,5 @@
+program
+    function forward number exemplo number num done
+start
+    exemplo(?)!
+end

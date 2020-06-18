@@ -1,0 +1,4 @@
+module
+    function public number exemplo number num do
+        return num ~= 10
+end
