@@ -222,6 +222,9 @@ ret 	: NIL											1 {}
 instrs 	: NIL											1 { fprintf(yyout, pfTEXT pfALIGN); }
 instrs 	: STMT(instrs, instr)							1 {}
 
+%! assert
+instr 	: ASSERT(expr)		1 { fprintf(yyout, pfCALL pfTRASH, "_massert", 8); }
+
 %! if elif else
 ifcond 	: expr 												1 { ifvec[++iflvl][0] = ++lbl; fprintf(yyout, pfJZ, mklbl(ifvec[iflvl][1] = ++lbl));}
 eicond 	: expr												1 { fprintf(yyout, pfJZ, mklbl(ifvec[iflvl][1] = ++lbl)); }
@@ -301,6 +304,7 @@ void evaluate(Node *p) {
 	/* if (trace) */ printNode(p, stdout, yynames);
 	if (!yyselect(p) && trace) printf("selection successful\n");
 
+	extvec[extcnt++] = strdup("_massert");
 	extvec[extcnt++] = strdup("_prints");
 	extvec[extcnt++] = strdup("_printi");
 	extvec[extcnt++] = strdup("_readi");

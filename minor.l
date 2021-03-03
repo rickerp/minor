@@ -45,6 +45,7 @@ H [A-Fa-f0-9]
 <CODE>"done"		return DONE;
 <CODE>"repeat"		return REPEAT;
 <CODE>"stop"		return STOP;
+<CODE>"assert"		return ASSERT;
 <CODE>"return"		return RETURN;
 <CODE>[ \t\n\r]+	;
 <CODE>"0x"{H}+		{ yylval.i = intstr(yytext); return INT; }

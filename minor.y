@@ -21,7 +21,7 @@ static int ret, cycle;
 %token <i> INT CHAR
 %token <s> ID STR
 %token PROGRAM MODULE END PUBLIC FORWARD STRING NUMBER ARRAY FUNCTION VOID CONST
-%token IF THEN FI ELIF ELSE RETURN START FOR UNTIL STEP DO DONE REPEAT STOP
+%token IF THEN FI ELIF ELSE RETURN START FOR UNTIL STEP DO DONE REPEAT STOP ASSERT
 
 %type<n> lval	decls	gdecls	decl	vardecl	fvar	fvars
 %type<i> qualif	const	type	ftype	vdim
@@ -29,7 +29,7 @@ static int ret, cycle;
 %type<n> ints	eqbody	body	ret	loop	instrs
 %type<n> instr	elifs	else	expr	exprs	block	main
 
-%token FARGS CHARS INTS ADDR VAR ARGS DECL NIL DIM
+%token FARGS CHARS INTS ADDR VAR ARGS DECL NIL DIM IFRR
 
 %right DEF
 %left '|'
@@ -171,6 +171,7 @@ instr	: IF expr THEN block elifs else FI
 	| expr '!'		{ $$ = uniNode('!', $1); isPrint($1); }
 	| expr ';'		{ $$ = $1; }
 	| lval '#' expr ';'	{ $$ = binNode('#', $3, $1); isAlloc($1, $3); }
+	| ASSERT expr ';' { $$ = uniNode(ASSERT, $2); }
 	;
 
 elifs	:			{ $$ = nilNode(NIL); }

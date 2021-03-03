@@ -1,0 +1,6 @@
+module
+    function public void massert number e do
+        if e then 
+            "assert failed: line 2"!
+        fi
+end
