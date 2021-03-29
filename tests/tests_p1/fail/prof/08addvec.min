@@ -1,0 +1,7 @@
+program
+	array v[3] := 1, 2, 3;
+	array v2[3] := 4, 5, 6
+start
+	v2 := v + v2;
+end
+can not add vectors!

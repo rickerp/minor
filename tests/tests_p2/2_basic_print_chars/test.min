@@ -1,0 +1,3 @@
+program start
+    ('h' 'e' 'l' 'l' 'o' " world\n")!
+end

@@ -1,0 +1,6 @@
+program
+	array v[3] := 1, 2, 3;
+	array s[3] := 3, 4, 5
+start
+	s := v;
+end

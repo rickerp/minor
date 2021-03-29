@@ -1,0 +1,11 @@
+program
+	number i
+start
+	for i := ? until i <= 0 step i := i - 1 do
+		i! "\n"!
+		if i % 10 = 0 then
+			stop
+			"dead stop!\n"!
+		fi
+	done
+end

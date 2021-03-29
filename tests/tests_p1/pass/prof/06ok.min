@@ -1,0 +1,5 @@
+program
+	array x[1] := 12
+start
+	x[0]!
+end

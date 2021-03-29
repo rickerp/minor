@@ -1,0 +1,3 @@
+module
+    public const number x := 0
+end

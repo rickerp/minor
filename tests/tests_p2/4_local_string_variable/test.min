@@ -1,0 +1,11 @@
+program start
+    string x;
+    string y;
+    string z;
+    x:="hello world\n";
+    y:="hello" " " "world" "\n";
+    z:=104 101 108 108 111 32 119 111 114 108 100 10;
+    (x)!
+    (y)!
+    (z)!
+end

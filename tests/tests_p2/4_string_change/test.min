@@ -1,0 +1,7 @@
+program
+    string x := "hello"
+start
+    x[0] := 'a';
+    x[1] := 98;
+    x! "\n"!
+end

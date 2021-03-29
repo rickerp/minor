@@ -1,2 +1,0 @@
-program start '@'!"\n"! $$ expect: 64
-end

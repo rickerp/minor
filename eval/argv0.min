@@ -1,5 +1,0 @@
-program
-function forward string argv number n done
-start
-argv(0)! "\n"!
-end

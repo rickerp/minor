@@ -1,0 +1,7 @@
+program
+    string x := "hello";
+    string y := " ";
+    string z := 'w' 'o' 'r' 'l' 'd' 0
+start
+    x! y! z! "\n"!
+end

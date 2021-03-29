@@ -1,0 +1,9 @@
+program
+    number x;
+    number y := 10;
+    number z := 0
+start
+    "x: "! x! "\n"!
+    "y: "! y! "\n"!
+    "z: "! z! "\n"!
+end

@@ -1,0 +1,6 @@
+program start
+    number x;
+    x := ?;
+    x!
+    "\n"!
+end

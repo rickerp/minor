@@ -1,0 +1,27 @@
+program
+start
+    number x;
+    x := ?;
+
+    if x > 10 then
+        "a"!
+    elif x < 4 then
+        "b"!
+    fi
+
+    if x ~= 3 then
+        "c"!
+    else
+        if x >= 5 then
+            "g"!
+        fi
+    fi
+
+    if x <= 6 then
+        "f"!
+    elif x = 0 then
+        "h"!
+    fi
+    
+    "\n"!
+end

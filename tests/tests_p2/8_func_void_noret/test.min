@@ -1,0 +1,5 @@
+program
+    function void x do 123!
+start
+    x; "\n"!
+end

@@ -1,0 +1,10 @@
+program
+    function number fatorial number x do
+        if x then
+            return x * fatorial(x - 1)
+        else
+            return 1
+        fi
+start
+    fatorial(4)! "\n"!
+end

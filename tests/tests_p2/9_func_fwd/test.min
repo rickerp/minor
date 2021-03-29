@@ -1,0 +1,7 @@
+program
+    function forward number z done;
+    function number x do z!;
+    function number z do return 123
+start
+   x; "\n"!
+end

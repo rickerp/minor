@@ -1,0 +1,10 @@
+program
+start
+    if 2 then
+        "yes"!
+    fi
+    if 0 then
+        "no"!
+    fi
+    "\n"!
+end

@@ -1,0 +1,5 @@
+program start
+    number x;
+    (x := (x := (x := 1)))! "\n"!
+    x! "\n"!
+end

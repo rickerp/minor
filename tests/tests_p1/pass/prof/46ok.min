@@ -1,0 +1,5 @@
+program
+  number x := 3
+start
+  2^x!
+end

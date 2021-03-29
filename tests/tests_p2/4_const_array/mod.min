@@ -1,0 +1,3 @@
+module
+    public const array x[10]
+end

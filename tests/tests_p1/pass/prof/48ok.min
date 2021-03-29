@@ -1,0 +1,3 @@
+module
+  function public number x number y do number x; x := 12; return x + y
+end

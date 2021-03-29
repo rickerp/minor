@@ -1,0 +1,5 @@
+program
+	number v := 1
+start
+	x!
+end

@@ -1,8 +1,0 @@
-program start
-  number d;
-  number n;
-  d:=?;
-  n:=?;
-  d%n! "\n"!
-  d/n! "\n"!
-end

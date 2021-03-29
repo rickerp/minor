@@ -1,0 +1,8 @@
+program start
+    array x;
+    x#2;
+    x[0] := 123;
+    x[1] := 456;
+    x[0]! "\n"!
+    x[1]! "\n"!
+end

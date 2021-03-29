@@ -1,0 +1,9 @@
+program
+start
+    array z[10];
+    number x;
+    x := 77;
+    z := &x;
+    (z[0] = x)!
+    "\n"!
+end

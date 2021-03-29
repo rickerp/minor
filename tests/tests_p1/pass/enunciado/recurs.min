@@ -1,0 +1,5 @@
+module
+function public number factorial number n do
+  if n < 3 then return n fi
+  return n * factorial(n - 1)
+end

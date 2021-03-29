@@ -1,0 +1,11 @@
+module
+function public number factorial number n do
+  number i;
+  number f;
+
+  f := 1;
+  for i := n until i < 2 step i := i - 1 do
+    f := f * i;
+  done
+  return f
+end

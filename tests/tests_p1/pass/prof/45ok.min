@@ -1,0 +1,7 @@
+program
+	function number bigger number x; number y do
+		y!
+		return x+y
+start
+	bigger(2,3)!
+end

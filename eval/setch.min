@@ -1,8 +1,0 @@
-program
-number n;
-string s := "hello world!\n"
-start
-	n := ?;
-	s[?] := n;
-	s!
-end

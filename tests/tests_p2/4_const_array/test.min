@@ -1,0 +1,5 @@
+program
+    forward array x
+start
+    x := 0;
+end

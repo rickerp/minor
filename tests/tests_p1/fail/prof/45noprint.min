@@ -1,0 +1,6 @@
+program
+	function void bigger number x; number y do
+		y!
+start
+	bigger(2,3)!
+end

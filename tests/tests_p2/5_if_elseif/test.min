@@ -1,0 +1,11 @@
+program
+start
+    if 2 = 4 then
+        "what"!
+    elif 1 = 4 then
+        "no"!
+    elif 0 = 0 then
+        "yes"!
+    fi
+    "\n"!
+end

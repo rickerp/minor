@@ -1,7 +1,3 @@
-*
-!/**/
-!*.*
-
 *.o
 libminor.a
 lib/libutil.a

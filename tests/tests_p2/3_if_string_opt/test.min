@@ -1,0 +1,33 @@
+program start
+    if "abc" >= "abc" then
+       "a"!    
+    fi
+    if "abc" <= "def" then
+       "b"!    
+    fi
+    if "abc" >= "ab" then
+       "c"!    
+    fi
+    if "k" < "a"    then
+       "d"!    
+    fi
+    if "zz" = "zz"  then
+       "e"!    
+    fi
+    if "zz" > "aa"  then
+       "f"!    
+    fi
+    if "g" ~= "g"   then
+       "g"!    
+    fi
+    if "ff" >= "ff" then
+       "h"!    
+    fi
+    if "a" ~= "f"   then
+       "i"!    
+    fi
+    if "a" = "f"    then
+       "j"!    
+    fi
+    "\n"!
+end

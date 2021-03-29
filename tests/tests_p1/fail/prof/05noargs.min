@@ -1,0 +1,6 @@
+program
+	function forward number argc number i done
+start
+	argc!
+end
+function takes arguments!

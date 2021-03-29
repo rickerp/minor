@@ -1,0 +1,4 @@
+module
+	const number var;
+end
+constants must be initialized!

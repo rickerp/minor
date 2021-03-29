@@ -1,0 +1,5 @@
+program
+    forward number x
+start
+    x := 12;
+end

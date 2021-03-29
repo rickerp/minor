@@ -1,0 +1,5 @@
+program
+    function number x do return 123
+start
+    x! "\n"!
+end

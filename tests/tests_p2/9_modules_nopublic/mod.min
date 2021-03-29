@@ -1,0 +1,3 @@
+module
+    number x := 123
+end

@@ -1,0 +1,11 @@
+program
+    array x := 1, 2, 3
+start
+    x := x + 1;
+    x[0]!
+    x := 1 + x;
+    x[0]!
+    x := x - 1;
+    x[0]!
+    "\n"!
+end

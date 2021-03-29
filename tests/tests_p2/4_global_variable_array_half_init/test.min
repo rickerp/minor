@@ -1,0 +1,10 @@
+program
+    array x[3] := 1, 2
+start
+    x[0]!
+    x[1]!
+    x[2]!
+    x[2] := 3;
+    x[2]!
+    "\n"!
+end

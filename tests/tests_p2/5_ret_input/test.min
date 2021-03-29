@@ -1,0 +1,9 @@
+program
+start
+    number x;
+    x := ?;
+    "\n"!
+    if 1 then
+        return x
+    fi
+end

@@ -1,0 +1,6 @@
+program
+    function number double number y do
+        return y * 2
+start
+    double(4)! "\n"!
+end

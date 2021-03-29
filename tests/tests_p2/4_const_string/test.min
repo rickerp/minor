@@ -1,0 +1,5 @@
+program
+    forward string x
+start
+    x := 0;
+end

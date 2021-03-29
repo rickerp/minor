@@ -1,0 +1,11 @@
+program
+start
+    number x;
+    for x := 0 until x = 10 step x := x + 1 do
+        if x = 3 then
+            stop
+        fi
+        x!
+    done
+    "\n"!
+end
