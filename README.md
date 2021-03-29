@@ -1,8 +1,7 @@
-# minor : simple-compiler
-
-## Introduction
-This is a compiler for a simple programming languange called **minor**. It was done for a college project in the Compilers course teached by @pedroreissantos  
+# minor 
+This is a simple compiler for a simple programming languange called **minor**. It was done for a college project in the Compilers course teached by @pedroreissantos  
 You can check the minor's reference manual [here](./MANUAL.md) in portuguese.  
+
 ## Installation
 ### Dependecies
 - gcc
